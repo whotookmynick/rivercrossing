@@ -5,17 +5,20 @@ import java.util.Vector;
 public class Level {
 
 	/**
-	 * board is matrix of 5*5 meaning: 25 "points".
+	 * board is matrix of 5*7 meaning: 35 "points".
+	 * however column zero and 6 are not really part of the game,
+	 * they represent river banks, always having one "stump" as
+	 * start point and one as end point.
 	 * each point either HAS a stump or DOES NOT have a stump.
 	 * this field tells whether point<x,y> has a stump on it or not.
-	 * example: [0][1][0][0][1]
-	 * 			[0][0][0][1][0]
-	 * 			[1][0][1][1][0]
-	 * 			[0][0][0][0][0]
-	 * 			[1][0][0][0][0]
+	 * example: [0][1][0][0][1][0][0]
+	 * 			[0][0][0][1][0][0][1]
+	 * 			[1][0][1][1][0][0][0]
+	 * 			[0][0][0][0][0][0][0]
+	 * 			[1][0][0][0][0][0][0]
 	 * the zeros represent water, the ones represents stumps.
 	 */
-	private boolean[][] _stumps;
+	private int[][] _stumps;
 	
 	/**
 	 * indicates which row has the 'hiker' at initial state.
@@ -66,4 +69,92 @@ public class Level {
 	private Vector<Edge> _sizeOneEdges;
 	private Vector<Edge> _sizeTwoEdges;
 	private Vector<Edge> _sizeThreeEdges;
+	
+	public Level() {
+
+		this._endRow = 0;
+		this._startRow = 0;
+		this._sizeOneEdges = new Vector<Edge>();
+		this._sizeTwoEdges = new Vector<Edge>();
+		this._sizeThreeEdges = new Vector<Edge>();
+		this._initialState = new BoardState(this);
+		this._stumps = new int[5][7];
+		for (int i=0; i<=4; i++) {
+			for (int j=0; j<=6; j++) {
+				this._stumps[i][j]=0;
+			}
+		}
+	}
+	
+	
+	public void print() {
+		this._initialState.print();
+	}
+	
+	
+	/**
+	 * getters and setters
+	 */
+	public int[][] getStumps() {
+		return _stumps;
+	}
+	public int getStartRow() {
+		return _startRow;
+	}
+	public int getEndRow() {
+		return _endRow;
+	}
+	public int getSizeOnePlanks() {
+		return _sizeOnePlanks;
+	}
+	public int getSizeTwoPlanks() {
+		return _sizeTwoPlanks;
+	}
+	public int getSizeThreePlanks() {
+		return _sizeThreePlanks;
+	}
+	public BoardState getInitialState() {
+		return _initialState;
+	}
+	public Vector<Edge> getSizeOneEdges() {
+		return _sizeOneEdges;
+	}
+	public Vector<Edge> getSizeTwoEdges() {
+		return _sizeTwoEdges;
+	}
+	public Vector<Edge> getSizeThreeEdges() {
+		return _sizeThreeEdges;
+	}
+	public void setStumps(int[][] _stumps) {
+		this._stumps = _stumps;
+	}
+	public void setStartRow(int row) {
+		_startRow = row;
+	}
+	public void setEndRow(int row) {
+		_endRow = row;
+	}
+	public void setSizeOnePlanks(int onePlanks) {
+		_sizeOnePlanks = onePlanks;
+	}
+	public void setSizeTwoPlanks(int twoPlanks) {
+		_sizeTwoPlanks = twoPlanks;
+	}
+	public void setSizeThreePlanks(int threePlanks) {
+		_sizeThreePlanks = threePlanks;
+	}
+	public void setInitialState(BoardState state) {
+		_initialState = state;
+	}
+	public void setSizeOneEdges(Vector<Edge> oneEdges) {
+		_sizeOneEdges = oneEdges;
+	}
+	public void setSizeTwoEdges(Vector<Edge> twoEdges) {
+		_sizeTwoEdges = twoEdges;
+	}
+	public void setSizeThreeEdges(Vector<Edge> threeEdges) {
+		_sizeThreeEdges = threeEdges;
+	}
 }
+
+
