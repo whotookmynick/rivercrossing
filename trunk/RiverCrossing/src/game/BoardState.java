@@ -48,7 +48,7 @@ public class BoardState {
 		// _s1chosenEdges, _s2chosenEdges and _s3chosenEdges
 	}
 	
-	public char[][] getHordgeMat() {
+	public char[][] getHorEdgeMat() {
 		return _horEdgesMat;
 		// to do: calculate matrix from the binary strings
 		// _s1chosenEdges, _s2chosenEdges and _s3chosenEdges
@@ -100,11 +100,11 @@ public class BoardState {
 					System.out.print(" ");
 				}
 				System.out.print(" ");
-				System.out.print(getHordgeMat()[i][j]+" ");
+				System.out.print(_horEdgesMat[i][j]+" ");
 			}
 			System.out.println(i+"");
 			for (int j=0; j<=6; j++) {
-				System.out.print(getVerEdgeMat()[i][j]+"   ");
+				System.out.print(_verEdgesMat[i][j]+"   ");
 			}
 			System.out.println("");
 		}

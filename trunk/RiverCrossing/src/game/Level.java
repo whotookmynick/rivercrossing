@@ -1,5 +1,6 @@
 package game;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 public class Level {
@@ -70,6 +71,16 @@ public class Level {
 	private Vector<Edge> _sizeTwoEdges;
 	private Vector<Edge> _sizeThreeEdges;
 	
+	/**
+	 * mapping between index number and edge.
+	 * this is an important field!
+	 * this is used to retrieve actual edge from the binary string that
+	 * represents where each edge is on the board.
+	 */
+	private HashMap<Integer, Edge> _SizeOneEdgeMap;
+	private HashMap<Integer, Edge> _SizeTwoEdgeMap;
+	private HashMap<Integer, Edge> _SizeThreeEdgeMap;
+	
 	public Level() {
 
 		this._endRow = 0;
@@ -78,6 +89,9 @@ public class Level {
 		this._sizeTwoEdges = new Vector<Edge>();
 		this._sizeThreeEdges = new Vector<Edge>();
 		this._initialState = new BoardState(this);
+		this._SizeOneEdgeMap = new HashMap<Integer, Edge>();
+		this._SizeTwoEdgeMap = new HashMap<Integer, Edge>();
+		this._SizeThreeEdgeMap = new HashMap<Integer, Edge>();
 		this._stumps = new int[5][7];
 		for (int i=0; i<=4; i++) {
 			for (int j=0; j<=6; j++) {
@@ -86,12 +100,65 @@ public class Level {
 		}
 	}
 	
+	public void initPossibleEdges() {
+	_sizeOneEdges = findPossibleEdges(_stumps, 0);
+	_sizeTwoEdges = findPossibleEdges(_stumps, 1);
+	_sizeThreeEdges = findPossibleEdges(_stumps, 2);
+	}
 	
 	public void print() {
 		this._initialState.print();
 	}
 	
+	public Vector<Edge> findPossibleEdges(int[][] mat, int size) {
+		int[] counters = new int[3];
+		for (int i=0; i<=2; i++) {
+			counters[i] = 0;
+		}
+		Vector<Edge> result = new Vector<Edge>();
+		for (int i=0; i<=4; i++) {
+			for (int j=0; j<=6; j++) {
+				if ( (validEdge(i,j,i+size,j)) && (mat[i][j]==1) && (mat[i+size][j]==1)) {
+					Edge e = new Edge(i,j,i+size,j);
+					result.add(e);
+					if (size == 0) {
+						_SizeOneEdgeMap.put(counters[0], e);
+					}
+					if (size == 1) {
+						_SizeTwoEdgeMap.put(counters[1], e);
+					}
+					if (size == 2) {
+						_SizeThreeEdgeMap.put(counters[2], e);
+					}
+					counters[size]++;
+				}
+				if ((validEdge(i,j,i,j+size)) && (mat[i][j]==1) && (mat[i][j+size]==1)) {
+					Edge e = new Edge(i,j,i,j+size);
+					result.add(e);
+					if (size == 0) {
+						_SizeOneEdgeMap.put(counters[0], e);
+					}
+					if (size == 1) {
+						_SizeTwoEdgeMap.put(counters[1], e);
+					}
+					if (size == 2) {
+						_SizeThreeEdgeMap.put(counters[2], e);
+					}
+					counters[size]++;
+				}	
+			}
+		}
+		return result;
+	}
 	
+	private boolean validEdge(int x1, int y1, int x2, int y2) {
+		return ((x1>=0) && (x1<=4) &&
+				(y1>=0) && (y1<=6) &&
+				(x2>=0) && (x2<=4) &&
+				(y2>=0) && (y2<=6));
+	}
+
+
 	/**
 	 * getters and setters
 	 */

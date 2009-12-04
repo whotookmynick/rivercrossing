@@ -25,23 +25,13 @@ public class LevelFactory {
 						   {1,0,1,1,0,0,0}, 
 						   {0,0,0,0,0,0,0}, 
 						   {0,0,0,1,1,0,1}, 
-						   {0,0,0,0,0,0,0}};
+						   {0,0,0,0,0,0,0} };
 		level_0.setStumps(stumps);
-		Edge[] validEdges = {new Edge(1,0,1,2), //initial plank
-							 new Edge(1,2,1,3), // initial plank
-							 new Edge(1,3,3,3),
-							 new Edge(3,3,3,4),
-							 new Edge(3,4,3,6)};
-		
-		level_0.getSizeOneEdges().add(validEdges[1]); //initial plank
-		level_0.getSizeOneEdges().add(validEdges[3]);
-		
-		level_0.getSizeTwoEdges().add(validEdges[0]); //initial
-		level_0.getSizeTwoEdges().add(validEdges[2]);
-		level_0.getSizeTwoEdges().add(validEdges[4]);
-		
+		level_0.initPossibleEdges();
+				
 		int[] initialSizeOne = {1,0};
 		int[] initialSizeTwo = {1,0,0};
+		
 		level_0.getInitialState().setS1chosenEdges(initialSizeOne);
 		level_0.getInitialState().setS2chosenEdges(initialSizeTwo);
 		
