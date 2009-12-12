@@ -2,6 +2,7 @@ package evolutionary;
 
 import java.util.Vector;
 
+import game.BoardState;
 import game.Edge;
 import game.Level;
 
@@ -15,7 +16,7 @@ public class GeneralAlg {
 	
 	public static void evolutionaryRiverCrossing(Level level)
 	{
-		int[][][] stumps = generateRandomSolutions(level);
+		BoardState[] population = generateRandomSolutions(level);
 	}
 
 	/**
@@ -23,8 +24,8 @@ public class GeneralAlg {
 	 * @param level
 	 * @return
 	 */
-	private static int[][][] generateRandomSolutions(Level level) {
-		int ans[][][] = new int[SIZE_OF_POP][][];
+	private static BoardState[] generateRandomSolutions(Level level) {
+		BoardState []ans = new BoardState[SIZE_OF_POP];
 		Vector<Edge> sizeOnePlaces =level.findPossibleEdges(level.getStumps(), 0);
 		Vector<Edge> sizeTwoPlaces =level.findPossibleEdges(level.getStumps(), 1);
 		Vector<Edge> sizeThreePlaces =level.findPossibleEdges(level.getStumps(), 2);
@@ -39,7 +40,18 @@ public class GeneralAlg {
 			}
 			planksForOne.add(randPlank);
 		}
-
+		int []sizeOneBoardState = new int[sizeOnePlaces.size()];
+		for (int i = 0; i < sizeOneBoardState.length; i++)
+		{
+			sizeOneBoardState[i] = 0;
+		}
+		for (int curr : planksForOne)
+		{
+			sizeOneBoardState[curr] = 1;
+		}
+		BoardState currBoardState = new BoardState(level);
+		currBoardState.setS1chosenEdges(sizeOneBoardState);
+		
 		return ans;
 	}
 }
