@@ -1,11 +1,12 @@
 package mainApp;
 
+import evolutionary.GeneralAlg;
 import game.Level;
 import game.LevelFactory;
 
 /**
  * run this to see level printing
- * @author AWARMAN
+ * @author AWARMAN, NARAD
  *
  */
 public class Main {
@@ -14,6 +15,8 @@ public class Main {
 		LevelFactory factory = new LevelFactory();
 		Level level = factory.getLevel(0);
 		level.print();
+		
+		GeneralAlg.evolutionaryRiverCrossing(level);
 	}
 	
 }
