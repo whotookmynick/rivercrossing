@@ -22,6 +22,17 @@ public class BoardState {
 	private int[] _s2chosenEdges;
 	private int[] _s3chosenEdges;
 	
+	/**
+	 * This is added in order to support more general getting and setting of chosen edges
+	 * according to size of plank. (Not really functional but makes other code much nicer
+	 */
+	private int[][] _allChosenEdges;
+	
+	public BoardState()
+	{
+		_allChosenEdges = new int[3][];
+	}
+	
 	public Level getLevel() {
 		return _level;
 	}
@@ -54,6 +65,11 @@ public class BoardState {
 		// _s1chosenEdges, _s2chosenEdges and _s3chosenEdges
 	}
 
+	public int[] getChosenEdges(int sizeOfPlank)
+	{
+		return _allChosenEdges[sizeOfPlank-1];
+	}
+	
 	public int[] getS1chosenEdges() {
 		return _s1chosenEdges;
 	}
@@ -71,14 +87,17 @@ public class BoardState {
 	}
 
 	public void setS1chosenEdges(int[] edges) {
+		_allChosenEdges[0] = edges;
 		_s1chosenEdges = edges;
 	}
 
 	public void setS2chosenEdges(int[] edges) {
+		_allChosenEdges[1] = edges;
 		_s2chosenEdges = edges;
 	}
 
 	public void setS3chosenEdges(int[] edges) {
+		_allChosenEdges[2] = edges;
 		_s3chosenEdges = edges;
 	}
 
