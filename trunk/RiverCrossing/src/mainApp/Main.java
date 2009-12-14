@@ -16,7 +16,7 @@ public class Main {
 		Level level = factory.getLevel(0);
 		level.print();
 		
-		GeneralAlg.evolutionaryRiverCrossing(level);
+		//GeneralAlg.evolutionaryRiverCrossing(level);
 	}
 	
 }

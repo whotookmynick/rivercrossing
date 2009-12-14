@@ -28,11 +28,6 @@ public class BoardState {
 	 */
 	private int[][] _allChosenEdges;
 	
-	public BoardState()
-	{
-		_allChosenEdges = new int[3][];
-	}
-	
 	public Level getLevel() {
 		return _level;
 	}
@@ -103,6 +98,7 @@ public class BoardState {
 
 	public BoardState(Level level) {
 		this._level = level;
+		_allChosenEdges = new int[3][];
 	}
 
 	/**
