@@ -31,9 +31,11 @@ public class LevelFactory {
 				
 		int[] initialSizeOne = {1,0};
 		int[] initialSizeTwo = {1,0,0};
+		int[] initialSizeThree = {};
 		
 		level_0.getInitialState().setS1chosenEdges(initialSizeOne);
 		level_0.getInitialState().setS2chosenEdges(initialSizeTwo);
+		level_0.getInitialState().setS3chosenEdges(initialSizeThree);
 		
 		_levels.add(level_0);
 	}

@@ -112,7 +112,7 @@ public class Level {
 	}
 	
 	public void printMapping() {
-		System.out.println("**************** EDGES MAPPING ***************");
+		System.out.println("****************** LEVEL EDGES MAPPING ****************");
 		System.out.println("*** size 1 edges mapping ***");
 		for (int i : this._SizeOneEdgeMap.keySet()) {
 			System.out.println("index "+ i +" mapped to edge: "+_SizeOneEdgeMap.get(i));
@@ -125,7 +125,7 @@ public class Level {
 		for (int i : this._SizeThreeEdgeMap.keySet()) {
 			System.out.println("index "+ i +" mapped to edge: "+_SizeThreeEdgeMap.get(i));
 		}
-		System.out.println("**********************************************");
+		System.out.println("*******************************************************");
 	}
 	
 	public Vector<Edge> findPossibleEdges(int[][] mat, int size) {
