@@ -108,6 +108,24 @@ public class Level {
 	
 	public void print() {
 		this._initialState.print();
+		this.printMapping();
+	}
+	
+	public void printMapping() {
+		System.out.println("**************** EDGES MAPPING ***************");
+		System.out.println("*** size 1 edges mapping ***");
+		for (int i : this._SizeOneEdgeMap.keySet()) {
+			System.out.println("index "+ i +" mapped to edge: "+_SizeOneEdgeMap.get(i));
+		}
+		System.out.println("*** size 2 edges mapping ***");
+		for (int i : this._SizeTwoEdgeMap.keySet()) {
+			System.out.println("index "+ i +" mapped to edge: "+_SizeTwoEdgeMap.get(i));
+		}
+		System.out.println("*** size 3 edges mapping ***");
+		for (int i : this._SizeThreeEdgeMap.keySet()) {
+			System.out.println("index "+ i +" mapped to edge: "+_SizeThreeEdgeMap.get(i));
+		}
+		System.out.println("**********************************************");
 	}
 	
 	public Vector<Edge> findPossibleEdges(int[][] mat, int size) {
@@ -118,8 +136,8 @@ public class Level {
 		Vector<Edge> result = new Vector<Edge>();
 		for (int i=0; i<=4; i++) {
 			for (int j=0; j<=6; j++) {
-				if ( (validEdge(i,j,i+size,j)) && (mat[i][j]==1) && (mat[i+size][j]==1)) {
-					Edge e = new Edge(i,j,i+size,j);
+				if ( (validVerEdge(size,i,j,i+size+1,j))) {
+					Edge e = new Edge(i,j,i+size+1,j);
 					result.add(e);
 					if (size == 0) {
 						_SizeOneEdgeMap.put(counters[0], e);
@@ -132,8 +150,8 @@ public class Level {
 					}
 					counters[size]++;
 				}
-				if ((validEdge(i,j,i,j+size)) && (mat[i][j]==1) && (mat[i][j+size]==1)) {
-					Edge e = new Edge(i,j,i,j+size);
+				if ((validHorEdge(size,i,j,i,j+size+1))) {
+					Edge e = new Edge(i,j,i,j+size+1);
 					result.add(e);
 					if (size == 0) {
 						_SizeOneEdgeMap.put(counters[0], e);
@@ -150,12 +168,49 @@ public class Level {
 		}
 		return result;
 	}
+
 	
-	private boolean validEdge(int x1, int y1, int x2, int y2) {
+	private boolean withinBoardLimits(int x1, int y1, int x2, int y2) {
 		return ((x1>=0) && (x1<=4) &&
-				(y1>=0) && (y1<=6) &&
-				(x2>=0) && (x2<=4) &&
-				(y2>=0) && (y2<=6));
+		       (y1>=0) && (y1<=6) &&
+		       (x2>=0) && (x2<=4) &&
+		       (y2>=0) && (y2<=6));
+	}
+	
+	private boolean validVerEdge(int size, int x1, int y1, int x2, int y2) {
+		if (!withinBoardLimits(x1,y1,x2,y2)) {
+			return false;
+		}
+		boolean edgeBetweenStumps = ((_stumps[x1][y1]==1) &&
+									 (_stumps[x2][y1]==1));
+		if (!edgeBetweenStumps) {
+			return false;
+		}	
+		boolean noStumpBetween = true;
+		for (int i = x1+1; i<x2; i++) {
+			if ((i<=4) && (_stumps[i][y1] == 1)) {
+				noStumpBetween = false;
+			}
+		}		
+		return noStumpBetween;
+	}
+	
+	private boolean validHorEdge(int size, int x1, int y1, int x2, int y2) {
+		if (!withinBoardLimits(x1,y1,x2,y2)) {
+			return false;
+		}
+		boolean edgeBetweenStumps = ((_stumps[x1][y1]==1) &&
+									 (_stumps[x1][y2]==1));
+		if (!edgeBetweenStumps) {
+			return false;
+		}	
+		boolean noStumpBetween = true;
+		for (int i = y1+1; i<y2; i++) {
+			if ((i<=6) && (_stumps[x1][i] == 1)) {
+				noStumpBetween = false;
+			}
+		}		
+		return noStumpBetween;
 	}
 
 

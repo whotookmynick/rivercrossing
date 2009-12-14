@@ -17,4 +17,7 @@ public class Edge {
 		_x2 = x2;
 		_y2 = y2;
 	}
+	public String toString() {
+		return "[<row "+_x1+",col "+_y1+">, <row "+_x2+",col "+_y2+">]";
+	}
 }
