@@ -32,10 +32,7 @@ public class BoardState {
 		return _level;
 	}
 	
-	/**
-	 * the following 2 fields should not really exist!
-	 * (hard coded matrices - only now for demonstration)
-	 */
+
 	char[][] _verEdgesMat = {{'|','|','|','|','|','|','|'},
 							 {'|','|','|','|','|','|','|'},
 							 {'|','|','|','|','|','|','|'},
@@ -44,7 +41,7 @@ public class BoardState {
 
 	char[][] _horEdgesMat = {{'-','-','-','-','-','-','-'},
 							 {'-','-','-','-','-','-','-'},
-							 {'-','-','-','_','-','-','-'},
+							 {'-','-','-','-','-','-','-'},
 							 {'-','-','-','-','-','-','-'},
 							 {'-','-','-','-','-','-','-'}};
 	
