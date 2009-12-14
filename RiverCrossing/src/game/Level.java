@@ -107,8 +107,12 @@ public class Level {
 	}
 	
 	public void print() {
+		System.out.println("****************** LEVEL INITIAL STATE ****************");
 		this._initialState.print();
+		System.out.println("*******************************************************");
+		System.out.println();
 		this.printMapping();
+		System.out.println();
 	}
 	
 	public void printMapping() {
@@ -276,6 +280,15 @@ public class Level {
 	}
 	public void setSizeThreeEdges(Vector<Edge> threeEdges) {
 		_sizeThreeEdges = threeEdges;
+	}
+	public HashMap<Integer,Edge> getSizeOneEdgeMap() {
+		return _SizeOneEdgeMap;
+	}
+	public HashMap<Integer,Edge> getSizeTwoEdgeMap() {
+		return _SizeTwoEdgeMap;
+	}
+	public HashMap<Integer,Edge> getSizeThreeEdgeMap() {
+		return _SizeThreeEdgeMap;
 	}
 }
 

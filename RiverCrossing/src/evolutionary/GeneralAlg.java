@@ -13,8 +13,8 @@ import game.Level;
  */
 public class GeneralAlg {
 
-	private static final int SIZE_OF_POP = 50;
-	private static final int SIZE_OF_SOLUTION = 20;
+	private static final int SIZE_OF_POP = 3;
+	private static final int SIZE_OF_SOLUTION = 3;
 
 	public static void evolutionaryRiverCrossing(Level level)
 	{
@@ -30,7 +30,7 @@ public class GeneralAlg {
 	 * @param level
 	 * @return
 	 */
-	private static BoardState[][] generateRandomSolutions(Level level) {
+	public static BoardState[][] generateRandomSolutions(Level level) {
 		BoardState [][]ans = new BoardState[SIZE_OF_POP][SIZE_OF_SOLUTION];
 		for (int k = 0; k < SIZE_OF_POP; k++)
 		{
@@ -43,7 +43,8 @@ public class GeneralAlg {
 				currBoardState.setS2chosenEdges(sizeTwoBoardState);
 				int []sizeThreeBoardState = createRandomPlankPositions(2, level.getSizeThreePlanks(), level); 
 				currBoardState.setS3chosenEdges(sizeThreeBoardState);
-
+				currBoardState.initHorEdgeMat();
+				currBoardState.initVerEdgeMat();
 				ans[k][i] = currBoardState;
 			}
 		}

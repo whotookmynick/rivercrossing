@@ -1,6 +1,7 @@
 package mainApp;
 
 import evolutionary.GeneralAlg;
+import game.BoardState;
 import game.Level;
 import game.LevelFactory;
 
@@ -15,8 +16,11 @@ public class Main {
 		LevelFactory factory = new LevelFactory();
 		Level level = factory.getLevel(0);
 		level.print();
-		
-		//GeneralAlg.evolutionaryRiverCrossing(level);
+		BoardState[][] states = GeneralAlg.generateRandomSolutions(level);
+		for (int i=0; i<3; i++) {
+			states[0][i].print();
+		}	
+//		GeneralAlg.evolutionaryRiverCrossing(level);
 	}
 	
 }
