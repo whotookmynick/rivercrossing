@@ -20,4 +20,23 @@ public class Edge {
 	public String toString() {
 		return "[<row "+_x1+",col "+_y1+">, <row "+_x2+",col "+_y2+">]";
 	}
+	
+	public int getX1() {
+		return _x1;
+	}
+	public int getY1() {
+		return _y1;
+	}
+	public int getX2() {
+		return _y2;
+	}
+	public int getY2() {
+		return _y2;
+	}
+	public boolean isHorizontal() {
+		return (_x1 == _x2);
+	}
+	public boolean isVertical() {
+		return (_y1 == _y2);
+	}
 }

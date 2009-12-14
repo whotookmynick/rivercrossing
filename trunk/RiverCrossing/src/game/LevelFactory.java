@@ -36,6 +36,8 @@ public class LevelFactory {
 		level_0.getInitialState().setS1chosenEdges(initialSizeOne);
 		level_0.getInitialState().setS2chosenEdges(initialSizeTwo);
 		level_0.getInitialState().setS3chosenEdges(initialSizeThree);
+		level_0.getInitialState().initHorEdgeMat();
+		level_0.getInitialState().initVerEdgeMat();
 		
 		_levels.add(level_0);
 	}
