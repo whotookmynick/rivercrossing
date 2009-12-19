@@ -37,11 +37,11 @@ public class GeneralAlg {
 			for (int i = 0; i < SIZE_OF_SOLUTION; i++)
 			{
 				BoardState currBoardState = new BoardState(level);
-				int []sizeOneBoardState = createRandomPlankPositions(0, level.getSizeOnePlanks(), level); 
+				int []sizeOneBoardState = createRandomPlankPositions(0, level.getSizeOnePlanks(), level,level.getSizeOneEdges().size()); 
 				currBoardState.setS1chosenEdges(sizeOneBoardState);
-				int []sizeTwoBoardState = createRandomPlankPositions(1, level.getSizeTwoPlanks(), level); 
+				int []sizeTwoBoardState = createRandomPlankPositions(1, level.getSizeTwoPlanks(), level,level.getSizeTwoEdges().size()); 
 				currBoardState.setS2chosenEdges(sizeTwoBoardState);
-				int []sizeThreeBoardState = createRandomPlankPositions(2, level.getSizeThreePlanks(), level); 
+				int []sizeThreeBoardState = createRandomPlankPositions(2, level.getSizeThreePlanks(), level,level.getSizeThreeEdges().size()); 
 				currBoardState.setS3chosenEdges(sizeThreeBoardState);
 				currBoardState.initHorEdgeMat();
 				currBoardState.initVerEdgeMat();
@@ -51,16 +51,16 @@ public class GeneralAlg {
 		return ans;
 	}
 
-	private static int[] createRandomPlankPositions(int sizeOfPlanks,int numOfPlanks,Level level)
+	private static int[] createRandomPlankPositions(int sizeOfPlanks,int numOfPlanks,Level level,int randFactor)
 	{
 		Vector<Edge> possiblePlaces =level.findPossibleEdges(level.getStumps(), sizeOfPlanks);
 		Vector<Integer> randomPlanks = new Vector<Integer>(numOfPlanks);
 		for (int i = 0; i < numOfPlanks; i++)
 		{
-			int randPlank = (int)(Math.random() * numOfPlanks +1);
+			int randPlank = (int)(Math.random() * randFactor +1);
 			while (randomPlanks.contains(randPlank))
 			{
-				randPlank = (int)(Math.random() * numOfPlanks +1);
+				randPlank = (int)(Math.random() * randFactor +1);
 			}
 			randomPlanks.add(randPlank);
 		}
@@ -71,7 +71,7 @@ public class GeneralAlg {
 		}
 		for (int curr : randomPlanks)
 		{
-			randomBoardState[curr] = 1;
+			randomBoardState[curr-1] = 1;
 		}
 		return randomBoardState;
 	}
