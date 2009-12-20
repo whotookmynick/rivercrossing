@@ -160,8 +160,6 @@ public class GeneralAlg {
 	{
 		Vector<Integer> ans = new Vector<Integer>();
 		currState.getChosenEdges(plankLength);
-
-
 		return ans;
 	}
 }
