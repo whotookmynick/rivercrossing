@@ -92,9 +92,9 @@ public class GeneralAlg {
 
 	}
 
-	private static BoardState[][] createNewPopulation(BoardState[][] originalPop)
+	public static BoardState[][] createNewPopulation(BoardState[][] originalPop)
 	{
-		Fitness fit = null;
+		Fitness fit = new MockFitness();
 		BoardState[][] ans = new BoardState[SIZE_OF_POP][];
 		int[] allFitness = new int[SIZE_OF_POP];
 		int sumOfFitness = 0;

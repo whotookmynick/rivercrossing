@@ -21,6 +21,11 @@ public class Main {
 			states[0][i].print();
 		}	
 //		GeneralAlg.evolutionaryRiverCrossing(level);
+		System.out.println("******************** NEW POPULATION **************");
+		BoardState[][] newStates = GeneralAlg.createNewPopulation(states);
+		for (int i=0; i<3; i++) {
+			newStates[0][i].print();
+		}
 	}
 	
 }
