@@ -19,7 +19,7 @@ public class GeneralAlg {
 	public static void evolutionaryRiverCrossing(Level level)
 	{
 		BoardState[][] population = generateRandomSolutions(level);
-		
+
 		spliceTwoSolutions(population[0], population[1]);
 	}
 
@@ -91,7 +91,56 @@ public class GeneralAlg {
 		return ans;
 
 	}
-	
+
+	private static BoardState[][] createNewPopulation(BoardState[][] originalPop)
+	{
+		Fitness fit = null;
+		BoardState[][] ans = new BoardState[SIZE_OF_POP][];
+		int[] allFitness = new int[SIZE_OF_POP];
+		int sumOfFitness = 0;
+		for (int i=0; i < SIZE_OF_POP;i++)
+		{
+			int currFit = fit.fitnessFunction(originalPop[i]);
+			allFitness[i] = currFit;
+			sumOfFitness += currFit;
+		}
+
+		//chagne this to be in a loop
+		for (int i=0; i < SIZE_OF_POP; i++)
+		{
+			int randNum1 = (int)(Math.random() * sumOfFitness);
+			int randIndex1 = getIndexFromNum(randNum1,allFitness);
+			int randNum2 = (int)(Math.random() * sumOfFitness);
+			int randIndex2 = getIndexFromNum(randNum2,allFitness);
+			while (randIndex1 == randIndex2)
+			{
+				randNum2 = (int)(Math.random() * sumOfFitness);
+				randIndex2 = getIndexFromNum(randNum2,allFitness);
+			}
+			BoardState[] newBaby = spliceTwoSolutions(originalPop[randIndex1], originalPop[randIndex2]);
+			ans[i] = newBaby;
+		}
+		return ans;
+	}
+
+	private static int getIndexFromNum(int randNum, int[] allFitness) {
+		int startPlace = 0;
+		boolean found = false;
+		for (int i = 0; i < allFitness.length & !found;i++)
+		{
+			if (randNum >= startPlace &  randNum < allFitness[i]+startPlace)
+			{
+				found = true;
+				return i;
+			}
+			else
+			{
+				startPlace += allFitness[i];
+			}
+		}
+		return -1; // not found that means that the data isn't good.
+	}
+
 	/**
 	 * I need to find according to before where are the stumps that can have planks
 	 * in after. I will assume that more than one change is allowed.
@@ -106,13 +155,13 @@ public class GeneralAlg {
 		boolean moreThanOneChange = false;
 		return foundOneLegalChange ^ moreThanOneChange;
 	}
-	
+
 	private static Vector<Integer> legalPlacesToPutPlank(int plankLength,BoardState currState)
 	{
 		Vector<Integer> ans = new Vector<Integer>();
 		currState.getChosenEdges(plankLength);
 
-		
+
 		return ans;
 	}
 }
