@@ -105,7 +105,7 @@ public class GeneralAlg {
 			sumOfFitness += currFit;
 		}
 
-		//chagne this to be in a loop
+		//change this to be in a loop
 		for (int i=0; i < SIZE_OF_POP; i++)
 		{
 			int randNum1 = (int)(Math.random() * sumOfFitness);
