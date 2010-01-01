@@ -189,5 +189,10 @@ public class BoardState {
 		System.out.println();
 
 	}
+
+	public boolean canReachEdge(int i, int plankSize) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }
