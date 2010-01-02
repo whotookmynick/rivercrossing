@@ -14,7 +14,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		LevelFactory factory = new LevelFactory();
-		Level level = factory.getLevel(0);
+		Level level = factory.getLevel(3);
 		level.print();
 		BoardState[][] states = GeneralAlg.generateRandomSolutions(level);
 		for (int i=0; i<3; i++) {

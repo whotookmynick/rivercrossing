@@ -5,6 +5,8 @@ import java.util.Vector;
 
 public class Level {
 
+	private String _name;
+	
 	/**
 	 * board is matrix of 5*7 meaning: 35 "points".
 	 * however column zero and 6 are not really part of the game,
@@ -107,16 +109,16 @@ public class Level {
 	}
 	
 	public void print() {
-		System.out.println("****************** LEVEL INITIAL STATE ****************");
-		this._initialState.print();
-		System.out.println("*******************************************************");
-		System.out.println();
 		this.printMapping();
+		System.out.println();
+		System.out.println("****************** LEVEL "+this._name+" INITIAL STATE ****************");
+		this._initialState.print();
+		System.out.println("*********************************************************");
 		System.out.println();
 	}
 	
 	public void printMapping() {
-		System.out.println("****************** LEVEL EDGES MAPPING ****************");
+		System.out.println("****************** LEVEL "+this._name+" EDGES MAPPING ****************");
 		System.out.println("*** size 1 edges mapping ***");
 		for (int i : this._SizeOneEdgeMap.keySet()) {
 			System.out.println("index "+ i +" mapped to edge: "+_SizeOneEdgeMap.get(i));
@@ -289,6 +291,30 @@ public class Level {
 	}
 	public HashMap<Integer,Edge> getSizeThreeEdgeMap() {
 		return _SizeThreeEdgeMap;
+	}
+
+	public Edge findStartingEdge() {
+		for (Edge e1 : this._sizeOneEdges) {
+			if (e1.getY1() == 0) {
+				return e1;
+			}
+		}
+		for (Edge e2 : this._sizeTwoEdges) {
+			if (e2.getY1() == 0) {
+				return e2;
+			}
+		}
+		for (Edge e3 : this._sizeThreeEdges) {
+			if (e3.getY1() == 0) {
+				return e3;
+			}
+		}
+		return null;
+	}
+
+	public void setName(String name) {
+		this._name = name;
+		
 	}
 }
 
