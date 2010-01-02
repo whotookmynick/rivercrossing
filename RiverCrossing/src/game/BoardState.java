@@ -1,5 +1,7 @@
 package game;
 
+import java.util.Vector;
+
 public class BoardState {
 
 	/**
@@ -195,4 +197,36 @@ public class BoardState {
 		return false;
 	}
 	
+	public Vector<Edge> findAllTouchingEdges(Edge e) {
+		return findAllTouchingEdges(new Vector<Edge>(), e);
+	}
+	
+	public Vector<Edge> findAllTouchingEdges(Vector<Edge> touchingEdges, Edge e) {
+		for (int i=0; i<this._s1chosenEdges.length && this._s1chosenEdges[i] == 1; i++) {
+			Edge e1 = _level.getSizeOneEdgeMap().get(i);
+			if ((e.isTouching(e1))) {
+				touchingEdges.add(e1);
+				touchingEdges = findAllTouchingEdges(touchingEdges, e1);			
+			}
+		}
+		for (int i=0; i<this._s2chosenEdges.length && this._s2chosenEdges[i] == 1; i++) {
+			Edge e2 = _level.getSizeTwoEdgeMap().get(i);
+			if ((e.isTouching(e2))) {
+				touchingEdges.add(e2);
+				touchingEdges = findAllTouchingEdges(touchingEdges, e2);			
+			}
+		}
+		for (int i=0; i<this._s3chosenEdges.length && this._s3chosenEdges[i] == 1; i++) {
+			Edge e3 = _level.getSizeThreeEdgeMap().get(i);
+			if ((e.isTouching(e3))) {
+				touchingEdges.add(e3);
+				touchingEdges = findAllTouchingEdges(touchingEdges, e3);			
+			}
+		}
+		return touchingEdges;
+	}
+
+	public Edge findStartingEdge() {
+		return this._level.findStartingEdge();
+	}
 }

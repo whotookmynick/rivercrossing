@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import game.BoardState;
+import game.Edge;
 
 /**
  * this class wraps the fitness function used to calculate the success
@@ -101,43 +102,29 @@ public class RealFitness implements Fitness{
 	private double gradeLegality(BoardState[] sequence) {
 		double contextedLegality = INITIAL_CONTEXTED_LEGALITY;
 		double uncontextedLegality = INITIAL_UNCONTEXTED_LEGALITY;
-		int[] activeSet = findInitialActiveSet(sequence[0]);
+		Vector<Edge> activeSet = sequence[0].findAllTouchingEdges(sequence[0].findStartingEdge());
 		for (int i=0; i<=sequence.length-2; i++){
 			uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);
-			int p = findMovingPlank(sequence[i],sequence[i+1]);
-			if (!contains(activeSet,p)) {
+			Edge pivotOldPosition = findOldPosition(sequence[i],sequence[i+1]);
+			Edge pivotNewPosition = findNewPosition(sequence[i],sequence[i+1],pivotOldPosition);
+			if (!activeSet.contains(pivotOldPosition)) { // TODO check if works with "equals"
 				contextedLegality -= ILLEGAL_MOVEMENT_PENALTY;
 			}
-			activeSet = findNextActiveSet(sequence[i], sequence[i+1]);		
+			activeSet = sequence[i+1].findAllTouchingEdges(pivotNewPosition);
 		}
 		return uncontextedLegality + contextedLegality;
 	}
 	
 
-	private int[] findNextActiveSet(BoardState boardState,
-			BoardState boardState2) {
+	private Edge findNewPosition(BoardState boardState, BoardState boardState2,
+			Edge pivotOldPosition) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private boolean contains(int[] activeSet, int p) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private int[] findInitialActiveSet(BoardState boardState) {
-//		for (int i : boardState.getLevel().get)
-		return null;
-	}
-
-	private int[] findActiveSet(BoardState boardState, BoardState boardState2) {
+	private Edge findOldPosition(BoardState boardState, BoardState boardState2) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	private int findMovingPlank(BoardState boardState, BoardState boardState2) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	private double uncontextedPenalty(BoardState from, BoardState to) {
@@ -157,7 +144,6 @@ public class RealFitness implements Fitness{
 				}
 			}		
 		}
-
 		return penalty1[0] + penalty1[1] + penalty2[2] +
 			   penalty2[0] + penalty2[1] + penalty2[2];
 	}
