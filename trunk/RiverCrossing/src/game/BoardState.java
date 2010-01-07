@@ -47,6 +47,7 @@ public class BoardState {
 							 {'-','-','-','-','-','-','-'},
 							 {'-','-','-','-','-','-','-'}};
 	
+	
 	public void initVerEdgeMat() {
 		for (int i=0; i<this._s1chosenEdges.length; i++) {
 			if (this._s1chosenEdges[i] == 1) {
@@ -193,7 +194,12 @@ public class BoardState {
 	}
 
 	public boolean canReachEdge(int i, int plankSize) {
-		// TODO Auto-generated method stub
+		Edge newEdge = _level.getEdge(i, plankSize);
+		for (Edge e : this.getAllCurrentEdges()) {
+			if (newEdge.isTouching(e)) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -229,4 +235,38 @@ public class BoardState {
 	public Edge findStartingEdge() {
 		return this._level.findStartingEdge();
 	}
+
+	public boolean hasCrossedPlanks() {
+		for (Edge e1 : this.getAllCurrentEdges()) {
+			for (Edge e2 : this.getAllCurrentEdges()) {
+				if (e1.isCrossing(e2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public Vector<Edge> getAllCurrentEdges() {
+		Vector<Edge> result = new Vector<Edge>();
+		for (int i=0; (i< this.getS1chosenEdges().length) && this.getS1chosenEdges()[i] == 1; i++) {
+			result.add(this._level.getSizeOneEdgeMap().get(i));
+		}
+		for (int i=0; (i< this.getS2chosenEdges().length) && this.getS2chosenEdges()[i] == 1; i++) {
+			result.add(this._level.getSizeTwoEdgeMap().get(i));
+		}
+		for (int i=0; (i< this.getS3chosenEdges().length) && this.getS3chosenEdges()[i] == 1; i++) {
+			result.add(this._level.getSizeThreeEdgeMap().get(i));
+		}
+		return result;
+	}
+
+	public int getEdgeIndex(Edge e) {
+		return this._level.getInverseEdgeMap().get(e);
+	}
+
+	public boolean hasPlankOn(Edge e) {
+		return this.getChosenEdges(e.getSize())[this.getEdgeIndex(e)] == 1;
+	}
+	
 }

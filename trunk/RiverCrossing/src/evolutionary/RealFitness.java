@@ -1,7 +1,7 @@
 package evolutionary;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.Vector;
 
 import game.BoardState;
@@ -21,15 +21,16 @@ public class RealFitness implements Fitness{
 	 * length - shorter solutions are preferred.
 	 * legality - illegal solutions are allowed but receive lower grades.
 	 * progress - solution should show movement from left to right.
-	 * repeativity - solution should be penalized for back-and-forth movement
+	 * repetition - solution should be penalized for back-and-forth movement
 	 **/
 
 	private static final double INITIAL_UNCONTEXTED_LEGALITY = 0;
 	private static final double INITIAL_CONTEXTED_LEGALITY = 0;
-	private static final double ILLEGAL_MOVEMENT_PENALTY = 0;
-	private static final double PERFECT_LEGALITY = INITIAL_UNCONTEXTED_LEGALITY + INITIAL_CONTEXTED_LEGALITY;
+	public static final double PERFECT_LEGALITY = INITIAL_UNCONTEXTED_LEGALITY + INITIAL_CONTEXTED_LEGALITY;
 	private static final int TOO_MUCH_MOVING_PLANKS_PENALTY = 0;
 	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 0;
+	private static final int CROSSED_PLANKS_PENALTY = 0;
+	private static final double ILLEGAL_PLANK_WAS_MOVED_PENALTY = 0;
 	 /** 
 	 * these constants define initial grades.
 	 * initial value can be zero (and a solution will be rewarded for being good)
@@ -39,7 +40,7 @@ public class RealFitness implements Fitness{
 	private final double INITIAL_LEGALITY_GRADE = 0;
 	private final double INITIAL_STEP_LEGALITY_GRADE = 0;
 	private final double INITIAL_PROGRESS_GRADE = 0;
-	private final double INITIAL_REPEATIVITY_GRADE = 0;
+	private final double INITIAL_repeatition_GRADE = 0;
 		
 	/**
 	 * different weights can be defined for each quality
@@ -47,7 +48,7 @@ public class RealFitness implements Fitness{
 	private double _legalityWeight = 0.25;
 	private double _lengthWeight = 0.25;
 	private double _progressWeight = 0.25;
-	private double _repeativityWeight = 0.25;
+	private double _repeatitionWeight = 0.25;
 	
 	/**
 	 * this is the main function of this class
@@ -56,20 +57,20 @@ public class RealFitness implements Fitness{
 		double legality = gradeLegality(sequence);
 		double length = gradeLength(sequence);
 		double advancement = gradeProgress(sequence);
-		double repeativity = gradeRepeativity(sequence);
+		double repeatition = gradeRepetition(sequence);
 		double total = legality * _legalityWeight +
 					   length * _lengthWeight +
 					   advancement * _progressWeight +
-					   repeativity * _repeativityWeight;
+					   repeatition * _repeatitionWeight;
 		return (int)total;
 	}
 
 	/**
-	 * measures repeativity parameter
+	 * measures repetition parameter
 	 * @param sequence
 	 * @return
 	 */
-	private double gradeRepeativity(BoardState[] sequence) {
+	private double gradeRepetition(BoardState[] sequence) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -104,32 +105,52 @@ public class RealFitness implements Fitness{
 		double uncontextedLegality = INITIAL_UNCONTEXTED_LEGALITY;
 		Vector<Edge> activeSet = sequence[0].findAllTouchingEdges(sequence[0].findStartingEdge());
 		for (int i=0; i<=sequence.length-2; i++){
-			uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);
-			Edge pivotOldPosition = findOldPosition(sequence[i],sequence[i+1]);
-			Edge pivotNewPosition = findNewPosition(sequence[i],sequence[i+1],pivotOldPosition);
-			if (!activeSet.contains(pivotOldPosition)) { // TODO check if works with "equals"
-				contextedLegality -= ILLEGAL_MOVEMENT_PENALTY;
+			uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);		
+			HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
+			for (Edge e : activeSet) {
+				for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
+					if (isPlankMoved(e,e1,sequence[i+1])) {
+						possibleMovements.put(e, e1);
+					}
+				}
 			}
-			activeSet = sequence[i+1].findAllTouchingEdges(pivotNewPosition);
+			Edge chosenTarget = null;
+			if (possibleMovements.isEmpty()) {
+				contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
+				chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
+			}
+			else {
+				chosenTarget = chooseLegalMovement(possibleMovements);	
+			}
+			activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
 		}
 		return uncontextedLegality + contextedLegality;
 	}
-	
 
-	private Edge findNewPosition(BoardState boardState, BoardState boardState2,
-			Edge pivotOldPosition) {
-		// TODO Auto-generated method stub
-		return null;
+	private Edge chooseRandomMovement(BoardState from,
+			BoardState to) {
+		// for better selection we should prefer "from" edge to be empty but as for now we ignore it
+		Random generator = new Random();
+		Object[] values = to.getAllCurrentEdges().toArray();
+		Object randomValue = values[generator.nextInt(values.length)];
+		return (Edge)randomValue;
 	}
 
-	private Edge findOldPosition(BoardState boardState, BoardState boardState2) {
-		// TODO Auto-generated method stub
-		return null;
+	private Edge chooseLegalMovement(HashMap<Edge, Edge> possibleMovements) {
+		Random generator = new Random();
+		Object[] values = possibleMovements.values().toArray();
+		Object randomValue = values[generator.nextInt(values.length)];
+		return (Edge)randomValue;
+	}
+
+	private boolean isPlankMoved(Edge from, Edge to, BoardState boardState) {
+		return (( ! boardState.hasPlankOn(from)) && (boardState.hasPlankOn(to)));
 	}
 
 	private double uncontextedPenalty(BoardState from, BoardState to) {
 		int[] penalty1 = {0,0,0};
 		int[] penalty2 = {0,0,0};
+		int penalty3 = 0;
 		for (int plankSize = 0; plankSize <= 2; plankSize++) {
 			Vector<Integer> diffSet = new Vector<Integer>();
 			for (int i=0; i<to.getChosenEdges(plankSize).length; i++) {
@@ -144,8 +165,12 @@ public class RealFitness implements Fitness{
 				}
 			}		
 		}
+		if (to.hasCrossedPlanks()) {
+			penalty3 = CROSSED_PLANKS_PENALTY;
+		}
 		return penalty1[0] + penalty1[1] + penalty2[2] +
-			   penalty2[0] + penalty2[1] + penalty2[2];
+			   penalty2[0] + penalty2[1] + penalty2[2] +
+			   penalty3;
 	}
 
 

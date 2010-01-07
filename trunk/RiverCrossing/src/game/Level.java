@@ -82,6 +82,7 @@ public class Level {
 	private HashMap<Integer, Edge> _SizeOneEdgeMap;
 	private HashMap<Integer, Edge> _SizeTwoEdgeMap;
 	private HashMap<Integer, Edge> _SizeThreeEdgeMap;
+	private HashMap<Edge, Integer> _InverseEdgeMap;
 	
 	public Level() {
 
@@ -94,6 +95,7 @@ public class Level {
 		this._SizeOneEdgeMap = new HashMap<Integer, Edge>();
 		this._SizeTwoEdgeMap = new HashMap<Integer, Edge>();
 		this._SizeThreeEdgeMap = new HashMap<Integer, Edge>();
+		this._InverseEdgeMap = new HashMap<Edge,Integer>();
 		this._stumps = new int[5][7];
 		for (int i=0; i<=4; i++) {
 			for (int j=0; j<=6; j++) {
@@ -147,12 +149,15 @@ public class Level {
 					result.add(e);
 					if (size == 0) {
 						_SizeOneEdgeMap.put(counters[0], e);
+						_InverseEdgeMap.put(e, counters[0]);
 					}
 					if (size == 1) {
 						_SizeTwoEdgeMap.put(counters[1], e);
+						_InverseEdgeMap.put(e, counters[1]);
 					}
 					if (size == 2) {
 						_SizeThreeEdgeMap.put(counters[2], e);
+						_InverseEdgeMap.put(e, counters[2]);
 					}
 					counters[size]++;
 				}
@@ -292,6 +297,9 @@ public class Level {
 	public HashMap<Integer,Edge> getSizeThreeEdgeMap() {
 		return _SizeThreeEdgeMap;
 	}
+	public HashMap<Edge,Integer> getInverseEdgeMap() {
+		return _InverseEdgeMap;
+	}
 
 	public Edge findStartingEdge() {
 		for (Edge e1 : this._sizeOneEdges) {
@@ -315,6 +323,19 @@ public class Level {
 	public void setName(String name) {
 		this._name = name;
 		
+	}
+
+	public Edge getEdge(int i, int plankSize) {
+		if (i==0) {
+			return this.getSizeOneEdgeMap().get(i);
+		}
+		if (i==1) {
+			return this.getSizeTwoEdgeMap().get(i);
+		}
+		if (i==2) {
+			return this.getSizeThreeEdgeMap().get(i);
+		}
+		return null;
 	}
 }
 
