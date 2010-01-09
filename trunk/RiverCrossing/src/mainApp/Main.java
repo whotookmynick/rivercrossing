@@ -14,16 +14,16 @@ public class Main {
 
 	public static void main(String[] args) {
 		LevelFactory factory = new LevelFactory();
-		Level level = factory.getLevel(3);
+		Level level = factory.getLevel(0);
 		level.print();
 		BoardState[][] states = GeneralAlg.generateRandomSolutions(level);
-		for (int i=0; i<3; i++) {
-			states[0][i].print();
-		}	
+//		for (int i=0; i<20; i++) {
+//			states[0][i].print();
+//		}	
 //		GeneralAlg.evolutionaryRiverCrossing(level);
 		System.out.println("******************** NEW POPULATION **************");
 		BoardState[][] newStates = GeneralAlg.createNewPopulation(states);
-		for (int i=0; i<3; i++) {
+		for (int i=0; i<20; i++) {
 			newStates[0][i].print();
 		}
 	}

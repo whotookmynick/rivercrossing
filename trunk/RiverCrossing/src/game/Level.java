@@ -326,13 +326,13 @@ public class Level {
 	}
 
 	public Edge getEdge(int i, int plankSize) {
-		if (i==0) {
+		if (plankSize==0) {
 			return this.getSizeOneEdgeMap().get(i);
 		}
-		if (i==1) {
+		if (plankSize==1) {
 			return this.getSizeTwoEdgeMap().get(i);
 		}
-		if (i==2) {
+		if (plankSize==2) {
 			return this.getSizeThreeEdgeMap().get(i);
 		}
 		return null;

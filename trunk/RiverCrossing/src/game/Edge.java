@@ -17,10 +17,10 @@ public class Edge {
 		_y1 = y1;
 		_x2 = x2;
 		_y2 = y2;
-		if (x1 == x2) {
+		if (x1 == x2) { //horizontal
 			_size = y2 - y1 - 1;	
 		}
-		if (y1 == y2) {
+		if (y1 == y2) { //vertical
 			_size = x1 - x2 - 1;
 		}
 	}
@@ -106,5 +106,12 @@ public class Edge {
 			}
 		}
 		return false;
+	}
+	
+	public boolean equals(Edge other) {
+		return (this._x1 == other._x1)&&
+			   (this._x2 == other._x2)&&
+			   (this._y1 == other._y1)&&
+			   (this._y2 == other._y2);
 	}
 }
