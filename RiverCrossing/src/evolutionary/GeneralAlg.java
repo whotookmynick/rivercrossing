@@ -13,8 +13,8 @@ import game.Level;
  */
 public class GeneralAlg {
 
-	private static final int SIZE_OF_POP = 3;
-	private static final int SIZE_OF_SOLUTION = 3;
+	private static final int SIZE_OF_POP = 50;
+	private static final int SIZE_OF_SOLUTION = 20;
 
 	public static void evolutionaryRiverCrossing(Level level)
 	{
@@ -94,13 +94,14 @@ public class GeneralAlg {
 
 	public static BoardState[][] createNewPopulation(BoardState[][] originalPop)
 	{
-		Fitness fit = new MockFitness();
+		Fitness fit = new RealFitness();
 		BoardState[][] ans = new BoardState[SIZE_OF_POP][];
 		int[] allFitness = new int[SIZE_OF_POP];
 		int sumOfFitness = 0;
 		for (int i=0; i < SIZE_OF_POP;i++)
 		{
 			int currFit = fit.fitnessFunction(originalPop[i]);
+			System.out.println("Fitness is "+currFit);
 			allFitness[i] = currFit;
 			sumOfFitness += currFit;
 		}

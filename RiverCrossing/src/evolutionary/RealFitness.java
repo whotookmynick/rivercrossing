@@ -24,20 +24,20 @@ public class RealFitness implements Fitness{
 	 * repetition - solution should be penalized for back-and-forth movement
 	 **/
 
-	private static final double INITIAL_UNCONTEXTED_LEGALITY = 0;
-	private static final double INITIAL_CONTEXTED_LEGALITY = 0;
+	private static final double INITIAL_UNCONTEXTED_LEGALITY = 100;
+	private static final double INITIAL_CONTEXTED_LEGALITY = 100;
 	public static final double PERFECT_LEGALITY = INITIAL_UNCONTEXTED_LEGALITY + INITIAL_CONTEXTED_LEGALITY;
-	private static final int TOO_MUCH_MOVING_PLANKS_PENALTY = 0;
-	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 0;
-	private static final int CROSSED_PLANKS_PENALTY = 0;
-	private static final double ILLEGAL_PLANK_WAS_MOVED_PENALTY = 0;
+	private static final int TOO_MUCH_MOVING_PLANKS_PENALTY = 10;
+	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 10;
+	private static final int CROSSED_PLANKS_PENALTY = 10;
+	private static final double ILLEGAL_PLANK_WAS_MOVED_PENALTY = 10;
 	 /** 
 	 * these constants define initial grades.
 	 * initial value can be zero (and a solution will be rewarded for being good)
 	 * and it can be initially high (and a solution will be penalized for being bad)
 	 */
 	private final double INITIAL_LENGTH_GRADE = 100;
-	private final double INITIAL_LEGALITY_GRADE = 0;
+	private final double INITIAL_LEGALITY_GRADE = 100;
 	private final double INITIAL_STEP_LEGALITY_GRADE = 0;
 	private final double INITIAL_PROGRESS_GRADE = 0;
 	private final double INITIAL_repeatition_GRADE = 0;
@@ -45,10 +45,10 @@ public class RealFitness implements Fitness{
 	/**
 	 * different weights can be defined for each quality
 	 */
-	private double _legalityWeight = 0.25;
-	private double _lengthWeight = 0.25;
-	private double _progressWeight = 0.25;
-	private double _repeatitionWeight = 0.25;
+	private double _legalityWeight = 1;
+	private double _lengthWeight = 0;
+	private double _progressWeight = 0;
+	private double _repeatitionWeight = 0;
 	
 	/**
 	 * this is the main function of this class
@@ -56,11 +56,11 @@ public class RealFitness implements Fitness{
 	public int fitnessFunction(BoardState[] sequence) {
 		double legality = gradeLegality(sequence);
 		double length = gradeLength(sequence);
-		double advancement = gradeProgress(sequence);
+		double progress = gradeProgress(sequence);
 		double repeatition = gradeRepetition(sequence);
 		double total = legality * _legalityWeight +
 					   length * _lengthWeight +
-					   advancement * _progressWeight +
+					   progress * _progressWeight +
 					   repeatition * _repeatitionWeight;
 		return (int)total;
 	}
@@ -106,23 +106,23 @@ public class RealFitness implements Fitness{
 		Vector<Edge> activeSet = sequence[0].findAllTouchingEdges(sequence[0].findStartingEdge());
 		for (int i=0; i<=sequence.length-2; i++){
 			uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);		
-			HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
-			for (Edge e : activeSet) {
-				for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
-					if (isPlankMoved(e,e1,sequence[i+1])) {
-						possibleMovements.put(e, e1);
-					}
-				}
-			}
-			Edge chosenTarget = null;
-			if (possibleMovements.isEmpty()) {
-				contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
-				chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
-			}
-			else {
-				chosenTarget = chooseLegalMovement(possibleMovements);	
-			}
-			activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
+//			HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
+//			for (Edge e : activeSet) {
+//				for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
+//					if (isPlankMoved(e,e1,sequence[i+1])) {
+//						possibleMovements.put(e, e1);
+//					}
+//				}
+//			}
+//			Edge chosenTarget = null;
+//			if (possibleMovements.isEmpty()) {
+//				contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
+//				chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
+//			}
+//			else {
+//				chosenTarget = chooseLegalMovement(possibleMovements);	
+//			}
+//			activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
 		}
 		return uncontextedLegality + contextedLegality;
 	}
@@ -160,7 +160,7 @@ public class RealFitness implements Fitness{
 			}
 			penalty1[plankSize] = (diffSet.size() - 1) * TOO_MUCH_MOVING_PLANKS_PENALTY;
 			for (int i : diffSet) {
-				if (!from.canReachEdge(i, plankSize)) {
+				if ( ! from.canReachEdge(i, plankSize)) {
 					penalty2[plankSize] += IMPOSSIBLE_PLANK_MOVEMENT_PENALTY;
 				}
 			}		

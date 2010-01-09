@@ -116,7 +116,7 @@ public class BoardState {
 
 	public int[] getChosenEdges(int sizeOfPlank)
 	{
-		return _allChosenEdges[sizeOfPlank-1];
+		return _allChosenEdges[sizeOfPlank];
 	}
 	
 	public int[] getS1chosenEdges() {
@@ -210,21 +210,21 @@ public class BoardState {
 	public Vector<Edge> findAllTouchingEdges(Vector<Edge> touchingEdges, Edge e) {
 		for (int i=0; i<this._s1chosenEdges.length && this._s1chosenEdges[i] == 1; i++) {
 			Edge e1 = _level.getSizeOneEdgeMap().get(i);
-			if ((e.isTouching(e1))) {
+			if ((! touchingEdges.contains(e1)) && (e.isTouching(e1))) {
 				touchingEdges.add(e1);
 				touchingEdges = findAllTouchingEdges(touchingEdges, e1);			
 			}
 		}
 		for (int i=0; i<this._s2chosenEdges.length && this._s2chosenEdges[i] == 1; i++) {
 			Edge e2 = _level.getSizeTwoEdgeMap().get(i);
-			if ((e.isTouching(e2))) {
+			if ((! touchingEdges.contains(e2)) && (e.isTouching(e2))) {
 				touchingEdges.add(e2);
 				touchingEdges = findAllTouchingEdges(touchingEdges, e2);			
 			}
 		}
 		for (int i=0; i<this._s3chosenEdges.length && this._s3chosenEdges[i] == 1; i++) {
 			Edge e3 = _level.getSizeThreeEdgeMap().get(i);
-			if ((e.isTouching(e3))) {
+			if ((! touchingEdges.contains(e3)) && (e.isTouching(e3))) {
 				touchingEdges.add(e3);
 				touchingEdges = findAllTouchingEdges(touchingEdges, e3);			
 			}
@@ -262,10 +262,41 @@ public class BoardState {
 	}
 
 	public int getEdgeIndex(Edge e) {
-		return this._level.getInverseEdgeMap().get(e);
+		if (e.getSize() == 0) {
+			for (int k : this._level.getSizeOneEdgeMap().keySet()) {
+				if (this._level.getSizeOneEdgeMap().get(k).equals(e)) {
+					return k;
+				}
+			}
+		}
+		if (e.getSize() == 1) {
+			for (int k : this._level.getSizeTwoEdgeMap().keySet()) {
+				if (this._level.getSizeTwoEdgeMap().get(k).equals(e)) {
+					return k;
+				}
+			}
+		}
+		if (e.getSize() == 2) {
+			for (int k : this._level.getSizeThreeEdgeMap().keySet()) {
+				if (this._level.getSizeThreeEdgeMap().get(k).equals(e)) {
+					return k;
+				}
+			}
+		}
+//		System.out.println("#### "+e);
+//		if (this._level.getInverseEdgeMap() != null ){
+//			System.out.println("VVVVVVVV");
+//		}
+//		else {
+//			System.out.println("QQQQQQQ");
+//		}
+//		int x = this._level.getInverseEdgeMap().get(e);
+//		return x;
+		return 0;
 	}
 
 	public boolean hasPlankOn(Edge e) {
+		System.out.println("$$$$ "+e);
 		return this.getChosenEdges(e.getSize())[this.getEdgeIndex(e)] == 1;
 	}
 	
