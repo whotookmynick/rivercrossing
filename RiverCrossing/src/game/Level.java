@@ -258,6 +258,21 @@ public class Level {
 	public Vector<Edge> getSizeThreeEdges() {
 		return _sizeThreeEdges;
 	}
+	
+	public Vector<Edge> getEdgesInSize(int size)
+	{
+		switch (size) {
+		case 1:
+			return _sizeOneEdges;
+		case 2:
+			return _sizeTwoEdges;
+		case 3:
+			return _sizeThreeEdges;
+		default:
+			return null;
+		}
+	}
+	
 	public void setStumps(int[][] _stumps) {
 		this._stumps = _stumps;
 	}

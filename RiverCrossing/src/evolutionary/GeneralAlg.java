@@ -1,6 +1,9 @@
 package evolutionary;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Random;
 import java.util.Vector;
 
 import game.BoardState;
@@ -30,50 +33,111 @@ public class GeneralAlg {
 	 * @param level
 	 * @return
 	 */
+//	public static BoardState[][] generateRandomSolutions(Level level) {
+//		BoardState [][]ans = new BoardState[SIZE_OF_POP][SIZE_OF_SOLUTION];
+//		for (int k = 0; k < SIZE_OF_POP; k++)
+//		{
+//			ans[k][0] = level.getInitialState();
+//			for (int i = 1; i < SIZE_OF_SOLUTION; i++)
+//			{
+//				BoardState currBoardState = new BoardState(level);
+//				int []sizeOneBoardState = createRandomPlankPositions(0, level.getSizeOnePlanks(), level,level.getSizeOneEdges().size()); 
+//				currBoardState.setS1chosenEdges(sizeOneBoardState);
+//				int []sizeTwoBoardState = createRandomPlankPositions(1, level.getSizeTwoPlanks(), level,level.getSizeTwoEdges().size()); 
+//				currBoardState.setS2chosenEdges(sizeTwoBoardState);
+//				int []sizeThreeBoardState = createRandomPlankPositions(2, level.getSizeThreePlanks(), level,level.getSizeThreeEdges().size()); 
+//				currBoardState.setS3chosenEdges(sizeThreeBoardState);
+//				currBoardState.initHorEdgeMat();
+//				currBoardState.initVerEdgeMat();
+//				ans[k][i] = currBoardState;
+//			}
+//		}
+//		return ans;
+//	}
+
+//	private static int[] createRandomPlankPositions(int sizeOfPlanks,int numOfPlanks,Level level,int randFactor)
+//	{
+//		Vector<Edge> possiblePlaces =level.findPossibleEdges(level.getStumps(), sizeOfPlanks);
+//		Vector<Integer> randomPlanks = new Vector<Integer>(numOfPlanks);
+//		for (int i = 0; i < numOfPlanks; i++)
+//		{
+//			int randPlank = (int)(Math.random() * randFactor +1);
+//			while (randomPlanks.contains(randPlank))
+//			{
+//				randPlank = (int)(Math.random() * randFactor +1);
+//			}
+//			randomPlanks.add(randPlank);
+//		}
+//		int []randomBoardState = new int[possiblePlaces.size()];
+//		for (int i = 0; i < randomBoardState.length; i++)
+//		{
+//			randomBoardState[i] = 0;
+//		}
+//		for (int curr : randomPlanks)
+//		{
+//			randomBoardState[curr-1] = 1;
+//		}
+//		return randomBoardState;
+//	}
+
+	/**
+	 * This method creates random Board-States that have the right number of planks
+	 * from each size. The number of board states created is in the number of the
+	 * population.
+	 * This function creates each step in the level to have exactly one plank different from the previous
+	 * boardstate.
+	 * @param level
+	 * @return
+	 */
 	public static BoardState[][] generateRandomSolutions(Level level) {
 		BoardState [][]ans = new BoardState[SIZE_OF_POP][SIZE_OF_SOLUTION];
 		for (int k = 0; k < SIZE_OF_POP; k++)
 		{
-			for (int i = 0; i < SIZE_OF_SOLUTION; i++)
+			ans[k][0] = level.getInitialState();
+			for (int i = 1; i < SIZE_OF_SOLUTION; i++)
 			{
-				BoardState currBoardState = new BoardState(level);
-				int []sizeOneBoardState = createRandomPlankPositions(0, level.getSizeOnePlanks(), level,level.getSizeOneEdges().size()); 
-				currBoardState.setS1chosenEdges(sizeOneBoardState);
-				int []sizeTwoBoardState = createRandomPlankPositions(1, level.getSizeTwoPlanks(), level,level.getSizeTwoEdges().size()); 
-				currBoardState.setS2chosenEdges(sizeTwoBoardState);
-				int []sizeThreeBoardState = createRandomPlankPositions(2, level.getSizeThreePlanks(), level,level.getSizeThreeEdges().size()); 
-				currBoardState.setS3chosenEdges(sizeThreeBoardState);
-				currBoardState.initHorEdgeMat();
-				currBoardState.initVerEdgeMat();
+				BoardState currBoardState = generateNextRandomBoardState(ans[k][i-1]);
 				ans[k][i] = currBoardState;
 			}
 		}
 		return ans;
 	}
-
-	private static int[] createRandomPlankPositions(int sizeOfPlanks,int numOfPlanks,Level level,int randFactor)
+	
+	private static BoardState generateNextRandomBoardState(BoardState previous)
 	{
-		Vector<Edge> possiblePlaces =level.findPossibleEdges(level.getStumps(), sizeOfPlanks);
-		Vector<Integer> randomPlanks = new Vector<Integer>(numOfPlanks);
-		for (int i = 0; i < numOfPlanks; i++)
+		BoardState ans = new BoardState(previous.getLevel());
+		for (int i = 0; i <3; i++)
 		{
-			int randPlank = (int)(Math.random() * randFactor +1);
-			while (randomPlanks.contains(randPlank))
+			int []originalEdges = previous.getChosenEdges(i);
+			int []newEdges = Arrays.copyOf(originalEdges,originalEdges.length);
+			ans.setChosenEdges(newEdges, i+1);
+		}
+		boolean createdNewRandomPlank = false;
+		Random rand = new Random();
+		while (!createdNewRandomPlank)
+		{
+			int randSizeOfPlank = rand.nextInt(3)+1;
+			int []chosenPlanks = ans.getChosenEdges(randSizeOfPlank-1);
+			if (chosenPlanks.length > 0)
 			{
-				randPlank = (int)(Math.random() * randFactor +1);
+				createdNewRandomPlank = true;
+				int numberOfEdges = chosenPlanks.length;
+				int newRandomPlank = rand.nextInt(numberOfEdges);
+				while (chosenPlanks[newRandomPlank] == 1)
+				{
+					newRandomPlank = rand.nextInt(numberOfEdges);
+				}
+				int plankToReplace = rand.nextInt(numberOfEdges);
+				while (chosenPlanks[plankToReplace] == 0)
+				{
+					plankToReplace = rand.nextInt(numberOfEdges);
+				}
+				chosenPlanks[plankToReplace] = 0;
+				chosenPlanks[newRandomPlank] = 1;
+				ans.setChosenEdges(chosenPlanks,randSizeOfPlank);
 			}
-			randomPlanks.add(randPlank);
 		}
-		int []randomBoardState = new int[possiblePlaces.size()];
-		for (int i = 0; i < randomBoardState.length; i++)
-		{
-			randomBoardState[i] = 0;
-		}
-		for (int curr : randomPlanks)
-		{
-			randomBoardState[curr-1] = 1;
-		}
-		return randomBoardState;
+		return ans;
 	}
 
 	private static BoardState[] spliceTwoSolutions(BoardState[] solve1,BoardState[] solve2)
