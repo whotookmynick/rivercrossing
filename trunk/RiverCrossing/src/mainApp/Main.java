@@ -1,5 +1,7 @@
 package mainApp;
 
+import java.util.Random;
+
 import evolutionary.GeneralAlg;
 import game.BoardState;
 import game.Level;
@@ -13,14 +15,15 @@ import game.LevelFactory;
 public class Main {
 
 	public static void main(String[] args) {
+				
 		LevelFactory factory = new LevelFactory();
 		Level level = factory.getLevel(0);
 		level.print();
 		BoardState[][] states = GeneralAlg.generateRandomSolutions(level);
-//		for (int i=0; i<20; i++) {
-//			states[0][i].print();
-//		}	
-//		GeneralAlg.evolutionaryRiverCrossing(level);
+		for (int i=0; i<20; i++) {
+			states[0][i].print();
+		}	
+		//GeneralAlg.evolutionaryRiverCrossing(level);
 		System.out.println("******************** NEW POPULATION **************");
 		BoardState[][] newStates = GeneralAlg.createNewPopulation(states);
 		for (int i=0; i<20; i++) {

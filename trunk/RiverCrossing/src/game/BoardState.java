@@ -1,5 +1,6 @@
 package game;
 
+import java.security.AllPermission;
 import java.util.Vector;
 
 public class BoardState {
@@ -150,6 +151,24 @@ public class BoardState {
 		_s3chosenEdges = edges;
 	}
 
+	public void setChosenEdges(int[] edges,int size)
+	{
+		_allChosenEdges[size - 1] = edges;
+		switch (size) {
+		case 1:
+			_s1chosenEdges = edges;
+			break;
+		case 2:
+			_s2chosenEdges = edges;
+			break;
+		case 3:
+			_s3chosenEdges = edges;
+			break;
+		default:
+			break;
+		}
+	}
+	
 	public BoardState(Level level) {
 		this._level = level;
 		_allChosenEdges = new int[3][];
