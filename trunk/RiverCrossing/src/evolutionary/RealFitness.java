@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import game.BoardState;
 import game.Edge;
+import game.Level;
 
 /**
  * this class wraps the fitness function used to calculate the success
@@ -31,7 +32,7 @@ public class RealFitness implements Fitness{
 	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 10;
 	private static final int CROSSED_PLANKS_PENALTY = 10;
 	private static final double ILLEGAL_PLANK_WAS_MOVED_PENALTY = 10;
-	 /** 
+	/** 
 	 * these constants define initial grades.
 	 * initial value can be zero (and a solution will be rewarded for being good)
 	 * and it can be initially high (and a solution will be penalized for being bad)
@@ -39,17 +40,17 @@ public class RealFitness implements Fitness{
 	private final double INITIAL_LENGTH_GRADE = 100;
 	private final double INITIAL_LEGALITY_GRADE = 100;
 	private final double INITIAL_STEP_LEGALITY_GRADE = 0;
-	private final double INITIAL_PROGRESS_GRADE = 0;
-	private final double INITIAL_repeatition_GRADE = 0;
-		
+	private final double INITIAL_PROGRESS_GRADE = 100;
+	private final double INITIAL_repeatition_GRADE = 100;
+
 	/**
 	 * different weights can be defined for each quality
 	 */
 	private double _legalityWeight = 1;
 	private double _lengthWeight = 0;
-	private double _progressWeight = 0;
-	private double _repeatitionWeight = 0;
-	
+	private double _progressWeight = 1;
+	private double _repeatitionWeight = 1;
+
 	/**
 	 * this is the main function of this class
 	 */
@@ -59,9 +60,9 @@ public class RealFitness implements Fitness{
 		double progress = gradeProgress(sequence);
 		double repeatition = gradeRepetition(sequence);
 		double total = legality * _legalityWeight +
-					   length * _lengthWeight +
-					   progress * _progressWeight +
-					   repeatition * _repeatitionWeight;
+		length * _lengthWeight +
+		progress * _progressWeight +
+		repeatition * _repeatitionWeight;
 		return (int)total;
 	}
 
@@ -71,11 +72,29 @@ public class RealFitness implements Fitness{
 	 * @return
 	 */
 	private double gradeRepetition(BoardState[] sequence) {
-		// TODO Auto-generated method stub
-		return 0;
+		int repititionVal = 0;
+		int repeatPenalty = 10;
+		Vector<Integer> indicesAlreadyFound = new Vector<Integer>();
+		for (int i = 0; i < sequence.length; i++)
+		{
+			if (!indicesAlreadyFound.contains(i))
+			{
+				for (int j = i+1; j < sequence.length; j++)
+				{
+					if (sequence[i].equals(sequence[j]))
+					{
+						repititionVal += (1/(double)(j-i)) * repeatPenalty;
+						indicesAlreadyFound.add(j);
+					}
+				}
+			}
+		}
+
+
+		return INITIAL_repeatition_GRADE - repititionVal;
 	}
 
-	
+
 	/**
 	 * measures length parameter
 	 * @param sequence
@@ -87,12 +106,98 @@ public class RealFitness implements Fitness{
 
 	/**
 	 * measures progress parameter
+	 * The progress is defined as the amount of progress done in each third of the sequence.
+	 * e.g. If the sequence has moves in the first third of the sequence that constitutes moves in the
+	 * second third of the board then that move is penalized.
 	 * @param sequence
 	 * @return
 	 */
 	private double gradeProgress(BoardState[] sequence) {
-		// TODO Auto-generated method stub
-		return 0;
+		Level level = sequence[0].getLevel();
+		int penalizeVal = 0;
+		final int progressPenalty = 10;
+		for (int i = 0; i < sequence.length/3; i++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				int[] chosenBefore = sequence[i].getChosenEdges(k);
+				int[] chosenAfter = sequence[i].getChosenEdges(k);
+				for (int l=0;l < chosenBefore.length; l++)
+				{
+					if (chosenAfter[l] == 1 & chosenBefore[l] == 0)
+					{
+						Edge different = level.getEdge(l, k);
+						if (different.getX1() > 3)
+						{
+							penalizeVal += different.getX1() - 3;
+						}
+						if (different.getX2() > 3)
+						{
+							penalizeVal += different.getX2() - 3;
+						}
+					}
+				}
+			}
+		}
+
+		for (int i = sequence.length/3 + 1; i < sequence.length*2/3; i++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				int[] chosenBefore = sequence[i].getChosenEdges(k);
+				int[] chosenAfter = sequence[i].getChosenEdges(k);
+				for (int l=0;l < chosenBefore.length; l++)
+				{
+					if (chosenAfter[l] == 1 & chosenBefore[l] == 0)
+					{
+						Edge different = level.getEdge(l, k);
+						if (different.getX1() > 5)
+						{
+							penalizeVal += different.getX1() - 5;
+						}
+						if (different.getX1() <= 3)
+						{
+							penalizeVal += 4 - different.getX1();
+						}
+						if (different.getX2() > 5)
+						{
+							penalizeVal += different.getX2() - 5;
+						}
+						if (different.getX2() <= 3)
+						{
+							penalizeVal += 4 - different.getX2();
+						}
+					}
+				}
+			}
+		}
+
+		for (int i = sequence.length*2/3 + 1; i < sequence.length; i++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				int[] chosenBefore = sequence[i].getChosenEdges(k);
+				int[] chosenAfter = sequence[i].getChosenEdges(k);
+				for (int l=0;l < chosenBefore.length; l++)
+				{
+					if (chosenAfter[l] == 1 & chosenBefore[l] == 0)
+					{
+						Edge different = level.getEdge(l, k);
+						if (different.getX1() <= 5)
+						{
+							penalizeVal += 6 - different.getX1();
+						}
+
+						if (different.getX2() <= 5)
+						{
+							penalizeVal += 6 - different.getX2();
+						}
+					}
+				}
+			}
+		}
+
+		return INITIAL_PROGRESS_GRADE - (penalizeVal * progressPenalty);
 	}
 
 	/**
@@ -106,23 +211,23 @@ public class RealFitness implements Fitness{
 		Vector<Edge> activeSet = sequence[0].findAllTouchingEdges(sequence[0].findStartingEdge());
 		for (int i=0; i<=sequence.length-2; i++){
 			uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);		
-//			HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
-//			for (Edge e : activeSet) {
-//				for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
-//					if (isPlankMoved(e,e1,sequence[i+1])) {
-//						possibleMovements.put(e, e1);
-//					}
-//				}
-//			}
-//			Edge chosenTarget = null;
-//			if (possibleMovements.isEmpty()) {
-//				contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
-//				chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
-//			}
-//			else {
-//				chosenTarget = chooseLegalMovement(possibleMovements);	
-//			}
-//			activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
+			//			HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
+			//			for (Edge e : activeSet) {
+			//				for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
+			//					if (isPlankMoved(e,e1,sequence[i+1])) {
+			//						possibleMovements.put(e, e1);
+			//					}
+			//				}
+			//			}
+			//			Edge chosenTarget = null;
+			//			if (possibleMovements.isEmpty()) {
+			//				contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
+			//				chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
+			//			}
+			//			else {
+			//				chosenTarget = chooseLegalMovement(possibleMovements);	
+			//			}
+			//			activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
 		}
 		return uncontextedLegality + contextedLegality;
 	}
@@ -168,13 +273,13 @@ public class RealFitness implements Fitness{
 		if (to.hasCrossedPlanks()) {
 			penalty3 = CROSSED_PLANKS_PENALTY;
 		}
-		return penalty1[0] + penalty1[1] + penalty2[2] +
-			   penalty2[0] + penalty2[1] + penalty2[2] +
-			   penalty3;
+		return penalty1[0] + penalty1[1] + penalty1[2] +
+		penalty2[0] + penalty2[1] + penalty2[2] +
+		penalty3;
 	}
 
 
 
 
-	
+
 }
