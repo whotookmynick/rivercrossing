@@ -1,6 +1,7 @@
 package game;
 
 import java.security.AllPermission;
+import java.util.Arrays;
 import java.util.Vector;
 
 public class BoardState {
@@ -319,4 +320,28 @@ public class BoardState {
 		return this.getChosenEdges(e.getSize())[this.getEdgeIndex(e)] == 1;
 	}
 	
+	public boolean equals(Object o)
+	{
+		if (o instanceof BoardState)
+		{
+			BoardState other = (BoardState)o;
+			boolean isEqual = true;
+			isEqual = isEqual & equalArrays(_s1chosenEdges,other._s1chosenEdges);
+			isEqual = isEqual & equalArrays(_s2chosenEdges,other._s2chosenEdges);
+			isEqual = isEqual & equalArrays(_s3chosenEdges,other._s3chosenEdges);
+			return isEqual;
+		}
+		else
+			return false;
+	}
+
+	private static boolean equalArrays(int[] a,int b[])
+	{
+		for (int i = 0; i < a.length;i++)
+		{
+			if (a[i] != b[i])
+				return false;
+		}
+		return true;
+	}
 }

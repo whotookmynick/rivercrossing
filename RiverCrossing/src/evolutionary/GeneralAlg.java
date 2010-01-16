@@ -277,26 +277,4 @@ public class GeneralAlg {
 		}
 		return -1; // not found that means that the data isn't good.
 	}
-
-	/**
-	 * I need to find according to before where are the stumps that can have planks
-	 * in after. I will assume that more than one change is allowed.
-	 * In the fitnes function less steps per board change should be preffered.
-	 * @param before
-	 * @param afterStep
-	 * @return
-	 */
-	private static boolean checkLegalStep(BoardState before,BoardState afterStep)
-	{
-		boolean foundOneLegalChange = false;
-		boolean moreThanOneChange = false;
-		return foundOneLegalChange ^ moreThanOneChange;
-	}
-
-	private static Vector<Integer> legalPlacesToPutPlank(int plankLength,BoardState currState)
-	{
-		Vector<Integer> ans = new Vector<Integer>();
-		currState.getChosenEdges(plankLength);
-		return ans;
-	}
 }
