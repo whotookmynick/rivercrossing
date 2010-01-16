@@ -154,25 +154,34 @@ public class BoardState {
 
 	public void setChosenEdges(int[] edges,int size)
 	{
+		//System.out.println("XXXXXXXXXXX "+edges.length);
 		_allChosenEdges[size - 1] = edges;
 		switch (size) {
 		case 1:
 			_s1chosenEdges = edges;
+			_allChosenEdges[0] = edges;
 			break;
 		case 2:
+			_allChosenEdges[1] = edges;
 			_s2chosenEdges = edges;
 			break;
 		case 3:
+			_allChosenEdges[2] = edges;
 			_s3chosenEdges = edges;
 			break;
 		default:
 			break;
 		}
+		this.initHorEdgeMat();
+		this.initVerEdgeMat();
 	}
 	
 	public BoardState(Level level) {
 		this._level = level;
-		_allChosenEdges = new int[3][];
+		_allChosenEdges = new int[3][1];
+		this._s1chosenEdges = new int[1];
+		this._s2chosenEdges = new int[1];
+		this._s3chosenEdges = new int[1];
 	}
 
 	/**
@@ -316,8 +325,13 @@ public class BoardState {
 	}
 
 	public boolean hasPlankOn(Edge e) {
-		System.out.println("$$$$ "+e);
-		return this.getChosenEdges(e.getSize())[this.getEdgeIndex(e)] == 1;
+		//System.out.println("$$$$ "+e+" size "+ e.getSize());
+		//System.out.println("length "+this.getChosenEdges(e.getSize()).length);
+		if (this.getChosenEdges(e.getSize()-1).length == 0) {
+			return false;
+		}
+		return (this.getChosenEdges(e.getSize()-1)[this.getEdgeIndex(e)] == 1);
+		//return (this.getChosenEdges(e.getSize())[0] == 1);
 	}
 	
 	public boolean equals(Object o)

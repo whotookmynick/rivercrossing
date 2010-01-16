@@ -18,10 +18,10 @@ public class Edge {
 		_x2 = x2;
 		_y2 = y2;
 		if (x1 == x2) { //horizontal
-			_size = y2 - y1 - 1;	
+			_size = Math.abs(y2 - y1);	
 		}
 		if (y1 == y2) { //vertical
-			_size = x1 - x2 - 1;
+			_size = Math.abs(x1 - x2);
 		}
 	}
 	public String toString() {
