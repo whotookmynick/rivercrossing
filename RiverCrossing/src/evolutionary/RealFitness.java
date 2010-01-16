@@ -211,34 +211,39 @@ public class RealFitness implements Fitness{
 		Vector<Edge> activeSet = sequence[0].findAllTouchingEdges(sequence[0].findStartingEdge());
 		for (int i=0; i<=sequence.length-2; i++){
 			uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);		
-			//			HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
-			//			for (Edge e : activeSet) {
-			//				for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
-			//					if (isPlankMoved(e,e1,sequence[i+1])) {
-			//						possibleMovements.put(e, e1);
-			//					}
-			//				}
-			//			}
-			//			Edge chosenTarget = null;
-			//			if (possibleMovements.isEmpty()) {
-			//				contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
-			//				chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
-			//			}
-			//			else {
-			//				chosenTarget = chooseLegalMovement(possibleMovements);	
-			//			}
-			//			activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
+						HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
+						for (Edge e : activeSet) {
+							for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
+								if (isPlankMoved(e,e1,sequence[i+1])) {
+									possibleMovements.put(e, e1);
+								}
+							}
+						}
+						Edge chosenTarget = null;
+						if (possibleMovements.isEmpty()) {
+							contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
+							chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
+						}
+						else {
+							chosenTarget = chooseLegalMovement(possibleMovements);	
+						}
+						activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
 		}
 		return uncontextedLegality + contextedLegality;
 	}
 
-	private Edge chooseRandomMovement(BoardState from,
-			BoardState to) {
+	private Edge chooseRandomMovement(BoardState from, BoardState to) {
 		// for better selection we should prefer "from" edge to be empty but as for now we ignore it
 		Random generator = new Random();
 		Object[] values = to.getAllCurrentEdges().toArray();
-		Object randomValue = values[generator.nextInt(values.length)];
-		return (Edge)randomValue;
+		int len = values.length;
+		if (len > 0) {
+			Object randomValue = values[generator.nextInt(len)];
+			return (Edge)randomValue;
+		}
+		else {
+			return null;
+		}
 	}
 
 	private Edge chooseLegalMovement(HashMap<Edge, Edge> possibleMovements) {
