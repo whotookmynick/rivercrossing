@@ -46,7 +46,7 @@ public class RealFitness implements Fitness{
 	/**
 	 * different weights can be defined for each quality
 	 */
-	private double _legalityWeight = 1;
+	private double _legalityWeight = 2;
 	private double _lengthWeight = 0;
 	private double _progressWeight = 1;
 	private double _repeatitionWeight = 1;
