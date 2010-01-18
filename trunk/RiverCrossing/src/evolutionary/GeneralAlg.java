@@ -1,5 +1,8 @@
 package evolutionary;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -16,8 +19,9 @@ import game.Level;
  */
 public class GeneralAlg {
 
-	private static final int SIZE_OF_POP = 20;
+	private static final int SIZE_OF_POP = 15;
 	private static final int SIZE_OF_SOLUTION = 20;
+	private static PrintStream _fileStream;
 
 	private static BoardState[] createMockSolution(Level level)
 	{
@@ -45,18 +49,24 @@ public class GeneralAlg {
 	}
 
 	public static void evolutionaryRiverCrossing(Level level)
-	{
-		BoardState[] solutionForLevel1 = createMockSolution(level);
-
+	{		
 		BoardState[][] population = generateRandomSolutions(level);
 		BoardState[] solution = null;//getGoodSolution(population,solutionForLevel1,level);
 		for (int i = 0; i < 10 & solution == null; i++) // This should be replaced with the end condition of the alg
 		{
-			population = createNewPopulation(population);
+			population = createNewPopulation(population, i);
 //			solution = getGoodSolution(population,solutionForLevel1,level);
 		}
 		for (int i = 0;i < population.length;i++)
 		{
+//			String outputFileName = "c:\\River\\"+
+//			"citizen="+i+
+//			"_fitness="+population[i][0].getFitness()+
+//			"_level="+level.getName()+
+//			"_popsize="+SIZE_OF_POP+
+//			"_solsize="+SIZE_OF_SOLUTION+
+//			".txt";
+//			redirectOutput(outputFileName);		
 			System.out.println("******************** Citizen number " + i);
 			for (int j = 0; j < population[i].length;j++)
 			population[i][j].print();
@@ -228,7 +238,7 @@ public class GeneralAlg {
 
 	}
 
-	public static BoardState[][] createNewPopulation(BoardState[][] originalPop)
+	public static BoardState[][] createNewPopulation(BoardState[][] originalPop, int generationCounter)
 	{
 		Fitness fit = new RealFitness();
 		BoardState[][] ans = new BoardState[SIZE_OF_POP][];
@@ -237,6 +247,19 @@ public class GeneralAlg {
 		for (int i=0; i < SIZE_OF_POP;i++)
 		{
 			int currFit = fit.fitnessFunction(originalPop[i]);
+			originalPop[i][0].setFitness(currFit); // the first boardstate will hold fitness for the solution
+			
+			String outputFileName = "c:\\River\\"+
+			"generation="+generationCounter+
+			"_citizen="+i+
+			"_fitness="+currFit+
+			".txt";
+			redirectOutput(outputFileName);		
+			for (int k=0; k<SIZE_OF_SOLUTION; k++) {
+				originalPop[i][k].print();
+			}
+			
+			
 			System.out.println("Fitness is "+currFit);
 			allFitness[i] = currFit;
 			sumOfFitness += currFit;
@@ -276,5 +299,14 @@ public class GeneralAlg {
 			}
 		}
 		return -1; // not found that means that the data isn't good.
+	}
+	
+	public static void redirectOutput(String fileName) {
+		try {
+			_fileStream = new PrintStream(new FileOutputStream(fileName,true));
+	    	System.setOut(_fileStream);
+		} catch (FileNotFoundException e1) {
+			System.out.println(e1.getMessage());
+		}  
 	}
 }
