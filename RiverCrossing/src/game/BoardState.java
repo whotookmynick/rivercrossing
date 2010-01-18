@@ -49,6 +49,8 @@ public class BoardState {
 							 {'-','-','-','-','-','-','-'},
 							 {'-','-','-','-','-','-','-'}};
 	
+	int _fitness;
+	
 	
 	public void initVerEdgeMat() {
 		for (int i=0; i<this._s1chosenEdges.length; i++) {
@@ -132,7 +134,15 @@ public class BoardState {
 	public int[] getS3chosenEdges() {
 		return _s3chosenEdges;
 	}
+	
+	public int getFitness() {
+		return this._fitness;
+	}
 
+	public void setFitness(int fitness) {
+		this._fitness = fitness;
+	}
+	
 	public void setLevel(Level _level) {
 		this._level = _level;
 	}
@@ -182,6 +192,7 @@ public class BoardState {
 		this._s1chosenEdges = new int[1];
 		this._s2chosenEdges = new int[1];
 		this._s3chosenEdges = new int[1];
+		this._fitness = 0;
 	}
 
 	/**

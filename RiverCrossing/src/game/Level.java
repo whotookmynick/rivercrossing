@@ -339,6 +339,10 @@ public class Level {
 		this._name = name;
 		
 	}
+	
+	public String getName() {
+		return this._name;
+	}
 
 	public Edge getEdge(int i, int plankSize) {
 		if (plankSize==0) {
