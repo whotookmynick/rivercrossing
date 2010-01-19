@@ -62,6 +62,14 @@ public class BoardState {
 					}
 				}
 			}
+			if (this._s1chosenEdges[i] == 0) {
+				Edge e = _level.getSizeOneEdgeMap().get(i);
+				if ((e != null) && (e.isVertical())) {
+					for (int row = e.getX1(); row<e.getX2(); row++) {
+						_verEdgesMat[row][e.getY1()] = '|';
+					}
+				}
+			}
 		}
 		for (int i=0; i<this._s2chosenEdges.length; i++) {
 			if (this._s2chosenEdges[i] == 1) {
@@ -72,6 +80,14 @@ public class BoardState {
 					}
 				}
 			}
+			if (this._s2chosenEdges[i] == 0) {
+				Edge e = _level.getSizeTwoEdgeMap().get(i);
+				if ((e != null) && (e.isVertical())) {
+					for (int row = e.getX1(); row<e.getX2(); row++) {
+						_verEdgesMat[row][e.getY1()] = '|';
+					}
+				}
+			}
 		}
 		for (int i=0; i<this._s3chosenEdges.length; i++) {
 			if (this._s3chosenEdges[i] == 1) {
@@ -79,6 +95,14 @@ public class BoardState {
 				if (e.isVertical()) {
 					for (int row = e.getX1(); row<e.getX2(); row++) {
 						_verEdgesMat[row][e.getY1()] = 'p';
+					}
+				}
+			}
+			if (this._s3chosenEdges[i] == 0) {
+				Edge e = _level.getSizeThreeEdgeMap().get(i);
+				if ((e != null) && (e.isVertical())) {
+					for (int row = e.getX1(); row<e.getX2(); row++) {
+						_verEdgesMat[row][e.getY1()] = '|';
 					}
 				}
 			}
@@ -95,6 +119,14 @@ public class BoardState {
 					}
 				}
 			}
+			if (this._s1chosenEdges[i] == 0) {
+				Edge e = _level.getSizeOneEdgeMap().get(i);
+				if ((e != null) && (e.isHorizontal())) {
+					for (int col = e.getY1(); col<e.getY2(); col++) {
+						_horEdgesMat[e.getX1()][col] = '-';
+					}
+				}
+			}
 		}
 		for (int i=0; i<this._s2chosenEdges.length; i++) {
 			if (this._s2chosenEdges[i] == 1) {
@@ -105,6 +137,14 @@ public class BoardState {
 					}
 				}
 			}
+			if (this._s2chosenEdges[i] == 0) {
+				Edge e = _level.getSizeTwoEdgeMap().get(i);
+				if ((e != null) && (e.isHorizontal())) {
+					for (int col = e.getY1(); col<e.getY2(); col++) {
+						_horEdgesMat[e.getX1()][col] = '-';
+					}
+				}
+			}
 		}
 		for (int i=0; i<this._s3chosenEdges.length; i++) {
 			if (this._s3chosenEdges[i] == 1) {
@@ -112,6 +152,14 @@ public class BoardState {
 				if (e.isHorizontal()) {
 					for (int col = e.getY1(); col<e.getY2(); col++) {
 						_horEdgesMat[e.getX1()][col] = 'p';
+					}
+				}
+			}
+			if (this._s3chosenEdges[i] == 0) {
+				Edge e = _level.getSizeThreeEdgeMap().get(i);
+				if ((e != null) && (e.isHorizontal())) {
+					for (int col = e.getY1(); col<e.getY2(); col++) {
+						_horEdgesMat[e.getX1()][col] = '-';
 					}
 				}
 			}
@@ -150,21 +198,26 @@ public class BoardState {
 	public void setS1chosenEdges(int[] edges) {
 		_allChosenEdges[0] = edges;
 		_s1chosenEdges = edges;
+		this.initHorEdgeMat();
+		this.initVerEdgeMat();
 	}
 
 	public void setS2chosenEdges(int[] edges) {
 		_allChosenEdges[1] = edges;
 		_s2chosenEdges = edges;
+		this.initHorEdgeMat();
+		this.initVerEdgeMat();
 	}
 
 	public void setS3chosenEdges(int[] edges) {
 		_allChosenEdges[2] = edges;
 		_s3chosenEdges = edges;
+		this.initHorEdgeMat();
+		this.initVerEdgeMat();
 	}
 
 	public void setChosenEdges(int[] edges,int size)
 	{
-		//System.out.println("XXXXXXXXXXX "+edges.length);
 		_allChosenEdges[size - 1] = edges;
 		switch (size) {
 		case 1:
