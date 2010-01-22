@@ -22,6 +22,8 @@ public class GeneralAlg {
 	private static final int SIZE_OF_POP = 50;
 	private static final int SIZE_OF_SOLUTION = 10;
 	private static PrintStream _fileStream;
+	
+	public static final PrintStream	origOut	= System.out;
 
 	private static BoardState[] createMockSolution(Level level)
 	{
@@ -261,13 +263,15 @@ public class GeneralAlg {
 					originalPop[i][k].print();
 				}
 				System.out.println("Fitness is "+currFit);
+				System.out.println("Legality Fitness is " + fr.legal);
+				System.out.println("Progress Fitness is " + fr.progress);
+				System.out.println("Repetition Fitness is " + fr.repeat);
 			}
 			allFitness[i] = currFit;
 			sumOfFitness += currFit;
 		}
 		redirectOutput("C:\\River\\AVGFITNESS.fit");
-		if (generationCounter % 10 == 0)
-			System.out.println("AVG Fitness of " + generationCounter + " : " + ((double)sumOfFitness)/SIZE_OF_POP);
+		System.out.println("AVG Fitness of " + generationCounter + " : " + ((double)sumOfFitness)/SIZE_OF_POP);
 
 		for (int i=0; i < SIZE_OF_POP; i++)
 		{
