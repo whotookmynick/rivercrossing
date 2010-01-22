@@ -21,8 +21,12 @@ public class GeneralAlg {
 
 	private static final int SIZE_OF_POP = 50;
 	private static final int SIZE_OF_SOLUTION = 10;
+	private static double SIZE_OF_GENOM;
+
 	private static PrintStream _fileStream;
-	
+
+	public static Random rand = new Random();
+
 	public static final PrintStream	origOut	= System.out;
 
 	private static BoardState[] createMockSolution(Level level)
@@ -51,12 +55,14 @@ public class GeneralAlg {
 	}
 
 	public static void evolutionaryRiverCrossing(Level level)
-	{		
+	{	
+		SIZE_OF_GENOM = (level.getSizeOnePlanks() + level.getSizeTwoPlanks() + level.getSizeThreePlanks()) * SIZE_OF_SOLUTION;
 		BoardState[][] population = generateRandomSolutions(level);
 		BoardState[] solution = null;//getGoodSolution(population,solutionForLevel1,level);
 		for (int i = 0; i <= 100 & solution == null; i++) // This should be replaced with the end condition of the alg
 		{
 			population = createNewPopulation(population, i);
+			createMutation(population);
 			//			solution = getGoodSolution(population,solutionForLevel1,level);
 		}
 		for (int i = 0;i < population.length;i++)
@@ -186,7 +192,6 @@ public class GeneralAlg {
 			ans.setChosenEdges(newEdges, i+1);
 		}
 		boolean createdNewRandomPlank = false;
-		Random rand = new Random();
 		while (!createdNewRandomPlank)
 		{
 			int randSizeOfPlank = rand.nextInt(3)+1;
@@ -226,7 +231,8 @@ public class GeneralAlg {
 
 	private static BoardState[] spliceTwoSolutions(BoardState[] solve1,BoardState[] solve2)
 	{
-		int placeToSplice = (int)(Math.random() * SIZE_OF_SOLUTION);
+
+		int placeToSplice = rand.nextInt(SIZE_OF_SOLUTION+1);//(int)(Math.random() * SIZE_OF_SOLUTION);
 		BoardState []ans = new BoardState[SIZE_OF_SOLUTION];
 		for (int i = 0; i < placeToSplice; i++)
 		{
@@ -275,13 +281,13 @@ public class GeneralAlg {
 
 		for (int i=0; i < SIZE_OF_POP; i++)
 		{
-			int randNum1 = (int)(Math.random() * sumOfFitness);
+			int randNum1 = rand.nextInt(sumOfFitness+1);//(int)(Math.random() * sumOfFitness);
 			int randIndex1 = getIndexFromNum(randNum1,allFitness);
-			int randNum2 = (int)(Math.random() * sumOfFitness);
+			int randNum2 = rand.nextInt(sumOfFitness+1);//(int)(Math.random() * sumOfFitness);
 			int randIndex2 = getIndexFromNum(randNum2,allFitness);
 			while (randIndex1 == randIndex2)
 			{
-				randNum2 = (int)(Math.random() * sumOfFitness);
+				randNum2 = rand.nextInt(sumOfFitness+1);//(int)(Math.random() * sumOfFitness);
 				randIndex2 = getIndexFromNum(randNum2,allFitness);
 			}
 			BoardState[] newBaby = spliceTwoSolutions(originalPop[randIndex1], originalPop[randIndex2]);
@@ -308,11 +314,42 @@ public class GeneralAlg {
 		return -1; // not found that means that the data isn't good.
 	}
 
-	private static BoardState[][] createMutation(BoardState[][] origPop)
+	/**
+	 * This function goes over the whole population and with probability of 1/SIZE_OF_GENOM
+	 * creates a mutation which means to pick a random board and a random plank and move it randomly.
+	 * @param origPop
+	 */
+	private static void createMutation(BoardState[][] origPop)
 	{
-		//TODO: write this function that creates a mutation and use it.
-
-		return origPop;
+		final double probOfMut = 1.0 / SIZE_OF_GENOM;
+		for (BoardState currCit[] : origPop)
+		{
+			double chanceOfMut = rand.nextDouble();
+			if (chanceOfMut < probOfMut)
+			{
+				int randBoardIndex = rand.nextInt(currCit.length);
+				int randSizeOfPlank = rand.nextInt(3)+1;
+				int []chosenPlanks = currCit[randBoardIndex].getChosenEdges(randSizeOfPlank-1);
+				while (chosenPlanks.length <= 0 && !existsZero(chosenPlanks))
+				{
+					randSizeOfPlank = rand.nextInt(3)+1;
+					chosenPlanks = currCit[randBoardIndex].getChosenEdges(randSizeOfPlank-1);
+				}
+				int numberOfEdges = chosenPlanks.length;
+				int newRandomPlank = rand.nextInt(numberOfEdges);
+				while (chosenPlanks[newRandomPlank] == 1)
+				{
+					newRandomPlank = rand.nextInt(numberOfEdges);
+				}
+				int plankToReplace = rand.nextInt(numberOfEdges);
+				while (chosenPlanks[plankToReplace] == 0)
+				{
+					plankToReplace = rand.nextInt(numberOfEdges);
+				}
+				chosenPlanks[plankToReplace] = 0;
+				chosenPlanks[newRandomPlank] = 1;
+			}
+		}
 	}
 
 	public static void redirectOutput(String fileName) {
