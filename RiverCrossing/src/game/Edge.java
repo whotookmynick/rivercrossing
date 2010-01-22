@@ -48,6 +48,34 @@ public class Edge {
 	public boolean isVertical() {
 		return (_y1 == _y2);
 	}
+	
+	/**
+	 * This method checks wether the edge this is touching the edge other.
+	 * In order to check if there are touching edges the have to have at least one whole coordinate
+	 * exactly the same 
+	 */
+	public boolean isTouching(Edge other) //Noams Version
+	{
+		if (this._x1 == other._x1 && this._y1 == other._y1){
+			return true;
+		}
+		if (this._x1 == other._x2 && this._y1 == other._y2){
+			return true;
+		}
+		if (this._x2 == other._x1 && this._y2 == other._y1){
+			return true;
+		}
+		if (this._x2 == other._x2 && this._y2 == other._y2){
+			return true;
+		}
+		return false;
+	}
+	/*AYALS VERSION
+	 * This seems not to be working correctly.
+	 * I found an example:
+	 * [<row 0,col 2>, <row 2,col 2>]
+	   [<row 0,col 0>, <row 0,col 1>]
+	   returns true and shouldn't
 	public boolean isTouching(Edge other) {
 		if ((this.getX1() == other.getX1()) && (this.getY1()==other.getY1())) {
 			return true;
@@ -63,7 +91,7 @@ public class Edge {
 		}
 		return false;
 	}
-
+*/
 	public boolean isCrossing(Edge otherEdge) {
 		if (this.isHorizontal()) {
 			if (otherEdge.isHorizontal()) {
@@ -84,6 +112,15 @@ public class Edge {
 					return true;
 				}
 			}
+		}
+		return false;
+	}
+	
+	public boolean equals(Object other)
+	{
+		if (other instanceof Edge)
+		{
+			return equals((Edge)other);
 		}
 		return false;
 	}

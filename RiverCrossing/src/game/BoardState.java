@@ -2,6 +2,7 @@ package game;
 
 import java.security.AllPermission;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Vector;
 
 public class BoardState {
@@ -10,7 +11,7 @@ public class BoardState {
 	 * a BoardState object corresponds to a single Level object.
 	 */
 	private Level _level;
-	
+
 	/**
 	 * each of these field is a binary string that corresponds to a
 	 * matching _sizeXEdges field of class Level.
@@ -25,33 +26,33 @@ public class BoardState {
 	private int[] _s1chosenEdges;
 	private int[] _s2chosenEdges;
 	private int[] _s3chosenEdges;
-	
+
 	/**
 	 * This is added in order to support more general getting and setting of chosen edges
 	 * according to size of plank. (Not really functional but makes other code much nicer
 	 */
 	private int[][] _allChosenEdges;
-	
+
 	public Level getLevel() {
 		return _level;
 	}
-	
+
 
 	char[][] _verEdgesMat = {{'|','|','|','|','|','|','|'},
-							 {'|','|','|','|','|','|','|'},
-							 {'|','|','|','|','|','|','|'},
-							 {'|','|','|','|','|','|','|'},
-							 {'|','|','|','|','|','|','|'}};
+			{'|','|','|','|','|','|','|'},
+			{'|','|','|','|','|','|','|'},
+			{'|','|','|','|','|','|','|'},
+			{'|','|','|','|','|','|','|'}};
 
 	char[][] _horEdgesMat = {{'-','-','-','-','-','-','-'},
-							 {'-','-','-','-','-','-','-'},
-							 {'-','-','-','-','-','-','-'},
-							 {'-','-','-','-','-','-','-'},
-							 {'-','-','-','-','-','-','-'}};
-	
+			{'-','-','-','-','-','-','-'},
+			{'-','-','-','-','-','-','-'},
+			{'-','-','-','-','-','-','-'},
+			{'-','-','-','-','-','-','-'}};
+
 	int _fitness;
-	
-	
+
+
 	public void initVerEdgeMat() {
 		for (int i=0; i<this._s1chosenEdges.length; i++) {
 			if (this._s1chosenEdges[i] == 1) {
@@ -108,7 +109,7 @@ public class BoardState {
 			}
 		}
 	}
-	
+
 	public void initHorEdgeMat() {
 		for (int i=0; i<this._s1chosenEdges.length; i++) {
 			if (this._s1chosenEdges[i] == 1) {
@@ -170,7 +171,7 @@ public class BoardState {
 	{
 		return _allChosenEdges[sizeOfPlank];
 	}
-	
+
 	public int[] getS1chosenEdges() {
 		return _s1chosenEdges;
 	}
@@ -182,7 +183,7 @@ public class BoardState {
 	public int[] getS3chosenEdges() {
 		return _s3chosenEdges;
 	}
-	
+
 	public int getFitness() {
 		return this._fitness;
 	}
@@ -190,7 +191,7 @@ public class BoardState {
 	public void setFitness(int fitness) {
 		this._fitness = fitness;
 	}
-	
+
 	public void setLevel(Level _level) {
 		this._level = _level;
 	}
@@ -238,7 +239,7 @@ public class BoardState {
 		this.initHorEdgeMat();
 		this.initVerEdgeMat();
 	}
-	
+
 	public BoardState(Level level) {
 		this._level = level;
 		_allChosenEdges = new int[3][1];
@@ -298,7 +299,7 @@ public class BoardState {
 		}
 		return ans;
 	}
-	
+
 	public boolean canReachEdge(int i, int plankSize) {
 		Edge newEdge = _level.getEdge(i, plankSize);
 		for (Edge e : this.getAllCurrentEdges()) {
@@ -308,11 +309,65 @@ public class BoardState {
 		}
 		return false;
 	}
-	
+
 	public Vector<Edge> findAllTouchingEdges(Edge e) {
-		return findAllTouchingEdges(new Vector<Edge>(), e);
+		//return findAllTouchingEdges(new Vector<Edge>(), e); //AYALS VERSION
+		//Noams VERSION
+		Vector<Edge> touchingPlanks = new Vector<Edge>();
+		touchingPlanks.add(e);
+		return findAllTouchingEdges(touchingPlanks, new Vector<Edge>());
+	}
+
+	/*Noam's version*/
+	public Vector<Edge> findAllTouchingEdges(Vector<Edge> touchingPlanks, Vector<Edge> touchingEdges) {
+		Vector<Edge> ansEdges = new Vector<Edge>();
+		Vector<Edge> ansPlanks = new Vector<Edge>();
+		int[] currEdges = _s1chosenEdges;
+		//Vector<Edge> currEdges = _level.getEdgesInSize(1);
+		findTouchingEdgesForChosenEdges(currEdges, touchingPlanks,touchingEdges, ansEdges,ansPlanks,_level.getSizeOneEdgeMap());
+		
+		currEdges = _s2chosenEdges;
+		findTouchingEdgesForChosenEdges(currEdges, touchingPlanks,touchingEdges, ansEdges,ansPlanks,_level.getSizeTwoEdgeMap());
+		
+		currEdges = _s3chosenEdges;
+		findTouchingEdgesForChosenEdges(currEdges, touchingPlanks,touchingEdges, ansEdges,ansPlanks,_level.getSizeThreeEdgeMap());
+		
+		touchingEdges.addAll(ansEdges);
+		touchingPlanks.addAll(ansPlanks);
+		if (!ansEdges.isEmpty() | !ansPlanks.isEmpty())
+		{
+			findAllTouchingEdges(touchingPlanks,touchingEdges);
+		}
+		touchingEdges.addAll(touchingPlanks);
+		return touchingEdges;
+	}
+
+	private void findTouchingEdgesForChosenEdges(int[] currEdges,
+												Vector<Edge> touchingPlanks,Vector<Edge> touchingEdges,
+												Vector<Edge> ansEdges,Vector<Edge> ansPlanks,HashMap<Integer,Edge> edgeMap)
+	{
+		
+		for (int i = 0; i < currEdges.length; i++)
+		{
+			Edge curr = edgeMap.get(i);
+			if (!touchingPlanks.contains(curr) & !touchingEdges.contains(curr) & 
+					!ansEdges.contains(curr) & !ansPlanks.contains(curr))
+			{
+				for (Edge goodEdge : touchingPlanks)
+				{
+					if (curr.isTouching(goodEdge))
+					{
+						if (currEdges[i] == 1)
+							ansPlanks.add(curr);
+						else
+							ansEdges.add(curr);
+					}
+				}
+			}
+		}
 	}
 	
+	/*AYAL's Version
 	public Vector<Edge> findAllTouchingEdges(Vector<Edge> touchingEdges, Edge e) {
 		for (int i=0; i<this._s1chosenEdges.length && this._s1chosenEdges[i] == 1; i++) {
 			Edge e1 = _level.getSizeOneEdgeMap().get(i);
@@ -337,6 +392,7 @@ public class BoardState {
 		}
 		return touchingEdges;
 	}
+	 */
 
 	public Edge findStartingEdge() {
 		return this._level.findStartingEdge();
@@ -389,15 +445,15 @@ public class BoardState {
 				}
 			}
 		}
-//		System.out.println("#### "+e);
-//		if (this._level.getInverseEdgeMap() != null ){
-//			System.out.println("VVVVVVVV");
-//		}
-//		else {
-//			System.out.println("QQQQQQQ");
-//		}
-//		int x = this._level.getInverseEdgeMap().get(e);
-//		return x;
+		//		System.out.println("#### "+e);
+		//		if (this._level.getInverseEdgeMap() != null ){
+		//			System.out.println("VVVVVVVV");
+		//		}
+		//		else {
+		//			System.out.println("QQQQQQQ");
+		//		}
+		//		int x = this._level.getInverseEdgeMap().get(e);
+		//		return x;
 		return 0;
 	}
 
@@ -410,7 +466,7 @@ public class BoardState {
 		return (this.getChosenEdges(e.getSize()-1)[this.getEdgeIndex(e)] == 1);
 		//return (this.getChosenEdges(e.getSize())[0] == 1);
 	}
-	
+
 	public boolean equals(Object o)
 	{
 		if (o instanceof BoardState)

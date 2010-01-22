@@ -275,15 +275,19 @@ public class GeneralAlg {
 			}
 			allFitness[i] = currFit;
 			sumOfFitness += currFit;
+			if (fr.legal == RealFitness.MAX_LEGALITY_GRADE)
+			{
+				origOut.println("I HAVE A WINNER");
+			}
 		}
 		redirectOutput("C:\\River\\AVGFITNESS.fit");
 		System.out.println("AVG Fitness of " + generationCounter + " : " + ((double)sumOfFitness)/SIZE_OF_POP);
 
 		for (int i=0; i < SIZE_OF_POP; i++)
 		{
-			int randNum1 = rand.nextInt(sumOfFitness+1);//(int)(Math.random() * sumOfFitness);
+			int randNum1 = rand.nextInt(sumOfFitness);//(int)(Math.random() * sumOfFitness);
 			int randIndex1 = getIndexFromNum(randNum1,allFitness);
-			int randNum2 = rand.nextInt(sumOfFitness+1);//(int)(Math.random() * sumOfFitness);
+			int randNum2 = rand.nextInt(sumOfFitness);//(int)(Math.random() * sumOfFitness);
 			int randIndex2 = getIndexFromNum(randNum2,allFitness);
 			while (randIndex1 == randIndex2)
 			{
@@ -327,10 +331,10 @@ public class GeneralAlg {
 			double chanceOfMut = rand.nextDouble();
 			if (chanceOfMut < probOfMut)
 			{
-				int randBoardIndex = rand.nextInt(currCit.length);
+				int randBoardIndex = rand.nextInt(currCit.length-1)+1;
 				int randSizeOfPlank = rand.nextInt(3)+1;
 				int []chosenPlanks = currCit[randBoardIndex].getChosenEdges(randSizeOfPlank-1);
-				while (chosenPlanks.length <= 0 && !existsZero(chosenPlanks))
+				while (chosenPlanks.length <= 0 || !existsZero(chosenPlanks))
 				{
 					randSizeOfPlank = rand.nextInt(3)+1;
 					chosenPlanks = currCit[randBoardIndex].getChosenEdges(randSizeOfPlank-1);
