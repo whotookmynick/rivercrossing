@@ -32,6 +32,8 @@ public class RealFitness implements Fitness{
 	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 10;
 	private static final int CROSSED_PLANKS_PENALTY = 10;
 	private static final double ILLEGAL_PLANK_WAS_MOVED_PENALTY = 10;
+	private static final int PROGRESS_PENALTY = 10;
+	
 	/** 
 	 * these constants define initial grades.
 	 * initial value can be zero (and a solution will be rewarded for being good)
@@ -41,12 +43,12 @@ public class RealFitness implements Fitness{
 	private final double INITIAL_LEGALITY_GRADE = 100;
 	private final double INITIAL_STEP_LEGALITY_GRADE = 0;
 	private final double INITIAL_PROGRESS_GRADE = 100;
-	private final double INITIAL_repeatition_GRADE = 100;
+	private final double INITIAL_REPETITION_GRADE = 100;
 
 	/**
 	 * different weights can be defined for each quality
 	 */
-	private double _legalityWeight = 2;
+	private double _legalityWeight = 3;
 	private double _lengthWeight = 0;
 	private double _progressWeight = 1;
 	private double _repeatitionWeight = 1;
@@ -54,16 +56,21 @@ public class RealFitness implements Fitness{
 	/**
 	 * this is the main function of this class
 	 */
-	public int fitnessFunction(BoardState[] sequence) {
+	public FitnessResult fitnessFunction(BoardState[] sequence) {
 		double legality = gradeLegality(sequence);
 		double length = gradeLength(sequence);
 		double progress = gradeProgress(sequence);
 		double repeatition = gradeRepetition(sequence);
-		double total = legality * _legalityWeight +
-		length * _lengthWeight +
-		progress * _progressWeight +
-		repeatition * _repeatitionWeight;
-		return (int)total;
+		double total = (legality * _legalityWeight) +
+		(length * _lengthWeight) +
+		(progress * _progressWeight) +
+		(repeatition * _repeatitionWeight);
+		FitnessResult fr = new FitnessResult();
+		fr.total = Math.max(1,(int)total);
+		fr.legal = (legality * _legalityWeight);
+		fr.progress = (progress * _progressWeight);
+		fr.repeat = (repeatition * _repeatitionWeight);
+		return  fr;
 	}
 
 	/**
@@ -91,7 +98,7 @@ public class RealFitness implements Fitness{
 		}
 
 
-		return INITIAL_repeatition_GRADE - repititionVal;
+		return INITIAL_REPETITION_GRADE - repititionVal;
 	}
 
 
@@ -115,7 +122,6 @@ public class RealFitness implements Fitness{
 	private double gradeProgress(BoardState[] sequence) {
 		Level level = sequence[0].getLevel();
 		int penalizeVal = 0;
-		final int progressPenalty = 10;
 		for (int i = 0; i < sequence.length/3; i++)
 		{
 			for (int k = 0; k < 3; k++)
@@ -197,7 +203,7 @@ public class RealFitness implements Fitness{
 			}
 		}
 
-		return INITIAL_PROGRESS_GRADE - (penalizeVal * progressPenalty);
+		return INITIAL_PROGRESS_GRADE - (penalizeVal * PROGRESS_PENALTY);
 	}
 
 	/**
@@ -229,6 +235,11 @@ public class RealFitness implements Fitness{
 						}
 						activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
 		}
+		if (contextedLegality+uncontextedLegality == INITIAL_CONTEXTED_LEGALITY + INITIAL_UNCONTEXTED_LEGALITY)
+		{
+			System.out.println("I HAVE A WINNER");
+		}
+		
 		return uncontextedLegality + contextedLegality;
 	}
 
@@ -268,7 +279,10 @@ public class RealFitness implements Fitness{
 					diffSet.add(i);
 				}
 			}
-			penalty1[plankSize] = (diffSet.size() - 1) * TOO_MUCH_MOVING_PLANKS_PENALTY;
+			if (diffSet.size() > 0)
+			{
+				penalty1[plankSize] = (diffSet.size() - 1) * TOO_MUCH_MOVING_PLANKS_PENALTY;
+			}
 			for (int i : diffSet) {
 				if ( ! from.canReachEdge(i, plankSize)) {
 					penalty2[plankSize] += IMPOSSIBLE_PLANK_MOVEMENT_PENALTY;

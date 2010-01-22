@@ -19,8 +19,8 @@ import game.Level;
  */
 public class GeneralAlg {
 
-	private static final int SIZE_OF_POP = 15;
-	private static final int SIZE_OF_SOLUTION = 20;
+	private static final int SIZE_OF_POP = 50;
+	private static final int SIZE_OF_SOLUTION = 10;
 	private static PrintStream _fileStream;
 
 	private static BoardState[] createMockSolution(Level level)
@@ -52,24 +52,24 @@ public class GeneralAlg {
 	{		
 		BoardState[][] population = generateRandomSolutions(level);
 		BoardState[] solution = null;//getGoodSolution(population,solutionForLevel1,level);
-		for (int i = 0; i < 10 & solution == null; i++) // This should be replaced with the end condition of the alg
+		for (int i = 0; i <= 100 & solution == null; i++) // This should be replaced with the end condition of the alg
 		{
 			population = createNewPopulation(population, i);
-//			solution = getGoodSolution(population,solutionForLevel1,level);
+			//			solution = getGoodSolution(population,solutionForLevel1,level);
 		}
 		for (int i = 0;i < population.length;i++)
 		{
-//			String outputFileName = "c:\\River\\"+
-//			"citizen="+i+
-//			"_fitness="+population[i][0].getFitness()+
-//			"_level="+level.getName()+
-//			"_popsize="+SIZE_OF_POP+
-//			"_solsize="+SIZE_OF_SOLUTION+
-//			".txt";
-//			redirectOutput(outputFileName);		
+			//			String outputFileName = "c:\\River\\"+
+			//			"citizen="+i+
+			//			"_fitness="+population[i][0].getFitness()+
+			//			"_level="+level.getName()+
+			//			"_popsize="+SIZE_OF_POP+
+			//			"_solsize="+SIZE_OF_SOLUTION+
+			//			".txt";
+			//			redirectOutput(outputFileName);		
 			System.out.println("******************** Citizen number " + i);
 			for (int j = 0; j < population[i].length;j++)
-			population[i][j].print();
+				population[i][j].print();
 		}
 		if (solution != null)
 		{
@@ -246,26 +246,29 @@ public class GeneralAlg {
 		int sumOfFitness = 0;
 		for (int i=0; i < SIZE_OF_POP;i++)
 		{
-			int currFit = fit.fitnessFunction(originalPop[i]);
+			FitnessResult fr = fit.fitnessFunction(originalPop[i]);
+			int currFit = fr.total;
 			originalPop[i][0].setFitness(currFit); // the first boardstate will hold fitness for the solution
-			
-			String outputFileName = "c:\\River\\"+
-			"generation="+generationCounter+
-			"_citizen="+i+
-			"_fitness="+currFit+
-			".txt";
-			redirectOutput(outputFileName);		
-			for (int k=0; k<SIZE_OF_SOLUTION; k++) {
-				originalPop[i][k].print();
+			if (generationCounter % 10 == 0)
+			{
+				String outputFileName = "c:\\River\\"+
+				"generation="+generationCounter+
+				"_citizen="+i+
+				"_fitness="+currFit+
+				".txt";
+				redirectOutput(outputFileName);		
+				for (int k=0; k<SIZE_OF_SOLUTION; k++) {
+					originalPop[i][k].print();
+				}
+				System.out.println("Fitness is "+currFit);
 			}
-			
-			
-			System.out.println("Fitness is "+currFit);
 			allFitness[i] = currFit;
 			sumOfFitness += currFit;
 		}
+		redirectOutput("C:\\River\\AVGFITNESS.fit");
+		if (generationCounter % 10 == 0)
+			System.out.println("AVG Fitness of " + generationCounter + " : " + ((double)sumOfFitness)/SIZE_OF_POP);
 
-		//change this to be in a loop
 		for (int i=0; i < SIZE_OF_POP; i++)
 		{
 			int randNum1 = (int)(Math.random() * sumOfFitness);
@@ -300,11 +303,18 @@ public class GeneralAlg {
 		}
 		return -1; // not found that means that the data isn't good.
 	}
-	
+
+	private static BoardState[][] createMutation(BoardState[][] origPop)
+	{
+		//TODO: write this function that creates a mutation and use it.
+
+		return origPop;
+	}
+
 	public static void redirectOutput(String fileName) {
 		try {
 			_fileStream = new PrintStream(new FileOutputStream(fileName,true));
-	    	System.setOut(_fileStream);
+			System.setOut(_fileStream);
 		} catch (FileNotFoundException e1) {
 			System.out.println(e1.getMessage());
 		}  
