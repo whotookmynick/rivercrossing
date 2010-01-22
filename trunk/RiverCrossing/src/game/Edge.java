@@ -49,38 +49,18 @@ public class Edge {
 		return (_y1 == _y2);
 	}
 	public boolean isTouching(Edge other) {
-		if (this._x1 == other.getX1())
+		if ((this.getX1() == other.getX1()) && (this.getY1()==other.getY1())) {
 			return true;
-		if (this._x1 == other.getX2())
+		}
+		if ((this.getX1() == other.getX2()) && (this.getY1()==other.getY2())) {
 			return true;
-		if (this._x1 == other.getY1())
+		}
+		if ((this.getX2() == other.getX1()) && (this.getY2()==other.getY1())) {
 			return true;
-		if (this._x1 == other.getY2())
+		}
+		if ((this.getX2() == other.getX2()) && (this.getY2()==other.getY2())) {
 			return true;
-		if (this._x2 == other.getX1())
-			return true;
-		if (this._x2 == other.getX2())
-			return true;
-		if (this._x2 == other.getY1())
-			return true;
-		if (this._x2 == other.getY2())
-			return true;
-		if (this._y1 == other.getX1())
-			return true;
-		if (this._y1 == other.getX2())
-			return true;
-		if (this._y1 == other.getY1())
-			return true;
-		if (this._y1 == other.getY2())
-			return true;
-		if (this._y2 == other.getX1())
-			return true;
-		if (this._y2 == other.getX2())
-			return true;
-		if (this._y2 == other.getY1())
-			return true;
-		if (this._y2 == other.getY2())
-			return true;
+		}
 		return false;
 	}
 
