@@ -4,5 +4,5 @@ import game.BoardState;
 
 public interface Fitness {
 
-	int fitnessFunction(BoardState[] sequence);
+	FitnessResult fitnessFunction(BoardState[] sequence);
 }
