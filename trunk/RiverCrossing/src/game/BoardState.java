@@ -286,6 +286,19 @@ public class BoardState {
 
 	}
 
+	public String toString()
+	{
+		String ans = "";
+		for (int plankSize=0; plankSize<=2; plankSize++) {
+			ans += "{";
+			for (int i=0; i<_allChosenEdges[plankSize].length; i++) {
+				ans += _allChosenEdges[plankSize][i];
+			}
+			ans += "}";			
+		}
+		return ans;
+	}
+	
 	public boolean canReachEdge(int i, int plankSize) {
 		Edge newEdge = _level.getEdge(i, plankSize);
 		for (Edge e : this.getAllCurrentEdges()) {

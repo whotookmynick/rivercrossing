@@ -29,10 +29,11 @@ public class RealFitness implements Fitness{
 	private static final double INITIAL_CONTEXTED_LEGALITY = 100;
 	public static final double PERFECT_LEGALITY = INITIAL_UNCONTEXTED_LEGALITY + INITIAL_CONTEXTED_LEGALITY;
 	private static final int TOO_MUCH_MOVING_PLANKS_PENALTY = 10;
-	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 10;
+	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 20;
 	private static final int CROSSED_PLANKS_PENALTY = 10;
-	private static final double ILLEGAL_PLANK_WAS_MOVED_PENALTY = 10;
+	private static final double ILLEGAL_PLANK_WAS_MOVED_PENALTY = 20;
 	private static final int PROGRESS_PENALTY = 10;
+	private static final int REPETITION_PENALTY = 10;
 	
 	/** 
 	 * these constants define initial grades.
@@ -51,7 +52,7 @@ public class RealFitness implements Fitness{
 	private double _legalityWeight = 3;
 	private double _lengthWeight = 0;
 	private double _progressWeight = 1;
-	private double _repeatitionWeight = 1;
+	private double _repeatitionWeight = 0.4;
 
 	/**
 	 * this is the main function of this class
@@ -80,7 +81,6 @@ public class RealFitness implements Fitness{
 	 */
 	private double gradeRepetition(BoardState[] sequence) {
 		int repititionVal = 0;
-		int repeatPenalty = 10;
 		Vector<Integer> indicesAlreadyFound = new Vector<Integer>();
 		for (int i = 0; i < sequence.length; i++)
 		{
@@ -90,14 +90,13 @@ public class RealFitness implements Fitness{
 				{
 					if (sequence[i].equals(sequence[j]))
 					{
-						repititionVal += (1/(double)(j-i)) * repeatPenalty;
+						repititionVal += (1/(double)(j-i)) * REPETITION_PENALTY;
 						indicesAlreadyFound.add(j);
 					}
 				}
 			}
 		}
-
-
+//		GeneralAlg.origOut.println("the penalty for repetition is : " + repititionVal);
 		return INITIAL_REPETITION_GRADE - repititionVal;
 	}
 
@@ -127,7 +126,7 @@ public class RealFitness implements Fitness{
 			for (int k = 0; k < 3; k++)
 			{
 				int[] chosenBefore = sequence[i].getChosenEdges(k);
-				int[] chosenAfter = sequence[i].getChosenEdges(k);
+				int[] chosenAfter = sequence[i+1].getChosenEdges(k);
 				for (int l=0;l < chosenBefore.length; l++)
 				{
 					if (chosenAfter[l] == 1 & chosenBefore[l] == 0)
@@ -151,7 +150,7 @@ public class RealFitness implements Fitness{
 			for (int k = 0; k < 3; k++)
 			{
 				int[] chosenBefore = sequence[i].getChosenEdges(k);
-				int[] chosenAfter = sequence[i].getChosenEdges(k);
+				int[] chosenAfter = sequence[i+1].getChosenEdges(k);
 				for (int l=0;l < chosenBefore.length; l++)
 				{
 					if (chosenAfter[l] == 1 & chosenBefore[l] == 0)
@@ -178,12 +177,12 @@ public class RealFitness implements Fitness{
 			}
 		}
 
-		for (int i = sequence.length*2/3 + 1; i < sequence.length; i++)
+		for (int i = sequence.length*2/3 + 1; i < sequence.length-1; i++)
 		{
 			for (int k = 0; k < 3; k++)
 			{
 				int[] chosenBefore = sequence[i].getChosenEdges(k);
-				int[] chosenAfter = sequence[i].getChosenEdges(k);
+				int[] chosenAfter = sequence[i+1].getChosenEdges(k);
 				for (int l=0;l < chosenBefore.length; l++)
 				{
 					if (chosenAfter[l] == 1 & chosenBefore[l] == 0)
