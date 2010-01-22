@@ -45,15 +45,20 @@ public class RealFitness implements Fitness{
 	private final double INITIAL_STEP_LEGALITY_GRADE = 0;
 	private final double INITIAL_PROGRESS_GRADE = 100;
 	private final double INITIAL_REPETITION_GRADE = 100;
-
+	
 	/**
 	 * different weights can be defined for each quality
 	 */
-	private double _legalityWeight = 3;
-	private double _lengthWeight = 0;
-	private double _progressWeight = 1;
-	private double _repeatitionWeight = 0.4;
+	private static double _legalityWeight = 2;
+	private static double _lengthWeight = 0;
+	private static double _progressWeight = 0;
+	private static double _repeatitionWeight = 0.75;
 
+	/**
+	 * These next constants exist in order to be able to check if there is a winner in different classes.
+	 */
+	public static final double MAX_LEGALITY_GRADE = _legalityWeight * (INITIAL_CONTEXTED_LEGALITY + INITIAL_UNCONTEXTED_LEGALITY);
+	
 	/**
 	 * this is the main function of this class
 	 */
@@ -215,6 +220,7 @@ public class RealFitness implements Fitness{
 		double uncontextedLegality = INITIAL_UNCONTEXTED_LEGALITY;
 		Vector<Edge> activeSet = sequence[0].findAllTouchingEdges(sequence[0].findStartingEdge());
 		for (int i=0; i<=sequence.length-2; i++){
+//*****************UNCONTEXTED LEGALITY****************************
 			uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);		
 						HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
 						for (Edge e : activeSet) {
@@ -224,6 +230,7 @@ public class RealFitness implements Fitness{
 								}
 							}
 						}
+//********************CONTEXTED LEGALITY CHECK***************************
 						Edge chosenTarget = null;
 						if (possibleMovements.isEmpty()) {
 							contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
@@ -234,11 +241,6 @@ public class RealFitness implements Fitness{
 						}
 						activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
 		}
-		if (contextedLegality+uncontextedLegality == INITIAL_CONTEXTED_LEGALITY + INITIAL_UNCONTEXTED_LEGALITY)
-		{
-			System.out.println("I HAVE A WINNER");
-		}
-		
 		return uncontextedLegality + contextedLegality;
 	}
 
