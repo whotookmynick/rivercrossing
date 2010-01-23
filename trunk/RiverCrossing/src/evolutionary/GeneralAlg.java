@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Vector;
@@ -19,9 +20,12 @@ import game.Level;
  */
 public class GeneralAlg {
 
-	private static final int SIZE_OF_POP = 30;
-	private static final int SIZE_OF_SOLUTION = 6;
-	private static final int NUMBER_OF_GENERATIONS = 150;
+	static BoardState[] bestCandidate;
+	static FitnessResult maxFitness = new FitnessResult();//For debugging.
+
+	private static final int SIZE_OF_POP = 200;
+	public static final int SIZE_OF_SOLUTION = 16;
+	private static final int NUMBER_OF_GENERATIONS = 1000;
 	private static double SIZE_OF_GENOM;
 
 	private static PrintStream _fileStream;
@@ -29,31 +33,6 @@ public class GeneralAlg {
 	public static Random rand = new Random();
 
 	public static final PrintStream	origOut	= System.out;
-
-	private static BoardState[] createMockSolution(Level level)
-	{
-		BoardState[] solutionForLevel1 = new BoardState[4];
-		solutionForLevel1[0] = new BoardState(level);
-		solutionForLevel1[0].setS1chosenEdges(new int[]{1,0});
-		solutionForLevel1[0].setS2chosenEdges(new int[]{1,0,0});
-		solutionForLevel1[0].setS3chosenEdges(new int[0]);
-
-		solutionForLevel1[1] = new BoardState(level);
-		solutionForLevel1[1].setS1chosenEdges(new int[]{1,0});
-		solutionForLevel1[1].setS2chosenEdges(new int[]{0,1,0});
-		solutionForLevel1[1].setS3chosenEdges(new int[0]);
-
-		solutionForLevel1[2] = new BoardState(level);
-		solutionForLevel1[2].setS1chosenEdges(new int[]{0,1});
-		solutionForLevel1[2].setS2chosenEdges(new int[]{0,1,0});
-		solutionForLevel1[2].setS3chosenEdges(new int[0]);
-
-		solutionForLevel1[3] = new BoardState(level);
-		solutionForLevel1[3].setS1chosenEdges(new int[]{0,1});
-		solutionForLevel1[3].setS2chosenEdges(new int[]{0,0,1});
-		solutionForLevel1[3].setS3chosenEdges(new int[0]);
-		return solutionForLevel1;
-	}
 
 	public static void evolutionaryRiverCrossing(Level level)
 	{	
@@ -63,102 +42,20 @@ public class GeneralAlg {
 		for (int i = 0; i <= NUMBER_OF_GENERATIONS & solution == null; i++) // This should be replaced with the end condition of the alg
 		{
 			population = createNewPopulation(population, i);
-			createMutation(population);
-			//			solution = getGoodSolution(population,solutionForLevel1,level);
+			createMutation(population,i);
 		}
-		for (int i = 0;i < population.length;i++)
-		{
-			//			String outputFileName = "c:\\River\\"+
-			//			"citizen="+i+
-			//			"_fitness="+population[i][0].getFitness()+
-			//			"_level="+level.getName()+
-			//			"_popsize="+SIZE_OF_POP+
-			//			"_solsize="+SIZE_OF_SOLUTION+
-			//			".txt";
-			//			redirectOutput(outputFileName);		
-			System.out.println("******************** Citizen number " + i);
-			for (int j = 0; j < population[i].length;j++)
-				population[i][j].print();
-		}
-		if (solution != null)
-		{
-			System.out.println("Solution found");
-
-		}
+//		for (int i = 0;i < population.length;i++)
+//		{
+//			System.out.println("******************** Citizen number " + i);
+//			for (int j = 0; j < population[i].length;j++)
+//				population[i][j].print();
+//		}
+		new RealFitness().fitnessFunction(bestCandidate);
+		redirectOutput("c:\\River\\bestCandidate.txt");
+		System.out.println("The best candidate is with fitness: " + maxFitness);
+		for (int i = 0; i < bestCandidate.length;i++) 
+			bestCandidate[i].print();
 	}
-
-	private static BoardState[] getGoodSolution(BoardState[][] population,
-			BoardState[] solutionForLevel1, Level level) {
-
-		for (int i = 0; i < population.length; i++)
-		{
-			boolean isGoodSolution = true;
-			for (int j = 0; j < solutionForLevel1.length & isGoodSolution;j++)
-			{
-				isGoodSolution = isGoodSolution & population[i][j].equals(solutionForLevel1[j]);
-			}
-			if (isGoodSolution)
-			{
-				return population[i];
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * This method creates random Board-States that have the right number of planks
-	 * from each size. The number of board states created is in the number of the
-	 * population.
-	 * @param level
-	 * @return
-	 */
-	//	public static BoardState[][] generateRandomSolutions(Level level) {
-	//		BoardState [][]ans = new BoardState[SIZE_OF_POP][SIZE_OF_SOLUTION];
-	//		for (int k = 0; k < SIZE_OF_POP; k++)
-	//		{
-	//			ans[k][0] = level.getInitialState();
-	//			for (int i = 1; i < SIZE_OF_SOLUTION; i++)
-	//			{
-	//				BoardState currBoardState = new BoardState(level);
-	//				int []sizeOneBoardState = createRandomPlankPositions(0, level.getSizeOnePlanks(), level,level.getSizeOneEdges().size()); 
-	//				currBoardState.setS1chosenEdges(sizeOneBoardState);
-	//				int []sizeTwoBoardState = createRandomPlankPositions(1, level.getSizeTwoPlanks(), level,level.getSizeTwoEdges().size()); 
-	//				currBoardState.setS2chosenEdges(sizeTwoBoardState);
-	//				int []sizeThreeBoardState = createRandomPlankPositions(2, level.getSizeThreePlanks(), level,level.getSizeThreeEdges().size()); 
-	//				currBoardState.setS3chosenEdges(sizeThreeBoardState);
-	//				currBoardState.initHorEdgeMat();
-	//				currBoardState.initVerEdgeMat();
-	//				ans[k][i] = currBoardState;
-	//			}
-	//		}
-	//		return ans;
-	//	}
-
-	//	private static int[] createRandomPlankPositions(int sizeOfPlanks,int numOfPlanks,Level level,int randFactor)
-	//	{
-	//		Vector<Edge> possiblePlaces =level.findPossibleEdges(level.getStumps(), sizeOfPlanks);
-	//		Vector<Integer> randomPlanks = new Vector<Integer>(numOfPlanks);
-	//		for (int i = 0; i < numOfPlanks; i++)
-	//		{
-	//			int randPlank = (int)(Math.random() * randFactor +1);
-	//			while (randomPlanks.contains(randPlank))
-	//			{
-	//				randPlank = (int)(Math.random() * randFactor +1);
-	//			}
-	//			randomPlanks.add(randPlank);
-	//		}
-	//		int []randomBoardState = new int[possiblePlaces.size()];
-	//		for (int i = 0; i < randomBoardState.length; i++)
-	//		{
-	//			randomBoardState[i] = 0;
-	//		}
-	//		for (int curr : randomPlanks)
-	//		{
-	//			randomBoardState[curr-1] = 1;
-	//		}
-	//		return randomBoardState;
-	//	}
-
 
 	/**
 	 * This method creates random Board-States that have the right number of planks
@@ -174,9 +71,12 @@ public class GeneralAlg {
 		for (int k = 0; k < SIZE_OF_POP; k++)
 		{
 			ans[k][0] = level.getInitialState();
+			Edge lastMove = level.findStartingEdge();
 			for (int i = 1; i < SIZE_OF_SOLUTION; i++)
 			{
-				BoardState currBoardState = generateNextRandomBoardState(ans[k][i-1]);
+				RandomBoardStateResult rbsr = generateNextRandomBoardState(ans[k][i-1], lastMove);
+				BoardState currBoardState = rbsr.bs;//generateNextRandomBoardState(ans[k][i-1]);
+				lastMove = rbsr.lastMove;
 				ans[k][i] = currBoardState;
 			}
 		}
@@ -219,6 +119,45 @@ public class GeneralAlg {
 		return ans;
 	}
 
+	private static RandomBoardStateResult generateNextRandomBoardState(BoardState previous,Edge lastEdgeToMove)
+	{
+		Level level = previous.getLevel();
+		BoardState ans = new BoardState(level);
+		for (int i = 0; i <3; i++)
+		{
+			int []originalEdges = previous.getChosenEdges(i);
+			int []newEdges = Arrays.copyOf(originalEdges,originalEdges.length);
+			ans.setChosenEdges(newEdges, i+1);
+		}
+
+		Vector<Edge> touchingPlanks = new Vector<Edge>();
+		touchingPlanks.add(lastEdgeToMove);
+		Vector<Edge> touchingEdges = previous.findAllTouchingEdges(touchingPlanks, new Vector<Edge>());
+		int newEdgeRandIndex = rand.nextInt(touchingEdges.size());
+		int originalEdgeRandIndex = rand.nextInt(touchingPlanks.size());
+		Edge newEdge = touchingEdges.get(newEdgeRandIndex);
+		Edge origEdge = touchingPlanks.get(originalEdgeRandIndex);
+		while (newEdge.getSize() != origEdge.getSize())
+		{
+			newEdgeRandIndex = rand.nextInt(touchingEdges.size());
+			originalEdgeRandIndex = rand.nextInt(touchingPlanks.size());
+			newEdge = touchingEdges.get(newEdgeRandIndex);
+			origEdge = touchingPlanks.get(originalEdgeRandIndex);	
+		}
+		HashMap<Edge,Integer> inverseMap = level.getInverseEdgeMap();
+		int newEdgeIndex = inverseMap.get(newEdge);
+		int origEdgeIndex = inverseMap.get(origEdge);
+
+		int[] chosenPlanks = ans.getChosenEdges(origEdge.getSize() - 1);
+		chosenPlanks[origEdgeIndex] = 0;
+		chosenPlanks[newEdgeIndex] = 1;
+		ans.setChosenEdges(chosenPlanks, origEdge.getSize());
+		RandomBoardStateResult res = new RandomBoardStateResult();
+		res.bs = ans;
+		res.lastMove = newEdge;
+		return res;
+	}
+
 	private static boolean existsZero(int[] chosenPlanks) {
 		for (int i = 0; i < chosenPlanks.length; i++)
 		{
@@ -257,6 +196,9 @@ public class GeneralAlg {
 		{
 			FitnessResult fr = fit.fitnessFunction(originalPop[i]);
 			int currFit = fr.total;
+
+			if (currFit > maxFitness.total) {bestCandidate = originalPop[i];maxFitness=fr;}
+
 			originalPop[i][0].setFitness(currFit); // the first boardstate will hold fitness for the solution
 			if (generationCounter % 10 == 0)
 			{
@@ -265,21 +207,29 @@ public class GeneralAlg {
 				"_citizen="+i+
 				"_fitness="+currFit+
 				".txt";
-				redirectOutput(outputFileName);		
-				for (int k=0; k<SIZE_OF_SOLUTION; k++) {
-					originalPop[i][k].print();
-				}
-				System.out.println("Fitness is "+currFit);
-				System.out.println("Legality Fitness is " + fr.legal);
-				System.out.println("Progress Fitness is " + fr.progress);
-				System.out.println("Repetition Fitness is " + fr.repeat);
+//				redirectOutput(outputFileName);		
+//				for (int k=0; k<SIZE_OF_SOLUTION; k++) {
+//					originalPop[i][k].print();
+//				}
+//				System.out.println(fr);
 			}
 			allFitness[i] = currFit;
 			sumOfFitness += currFit;
 			if (fr.legal == RealFitness.MAX_LEGALITY_GRADE)
 			{
-				origOut.println("I HAVE A WINNER");
+				redirectOutput("C:\\River\\allWinners.txt");
+				if (fr.hasFinalEdge)
+				{
+					System.out.println("I HAVE A WINNER gen = " + generationCounter + " citizen = " + i);
+					//				else
+					//					System.out.println("I HAVE A PERFECT SPECIMIN gen = " + generationCounter + " citizen = " + i);
+					System.out.println(fr);
+					for (int ll=0; ll < originalPop[i].length;ll++)
+						originalPop[i][ll].print();
+					return new BoardState[][]{originalPop[i]};
+				}
 			}
+
 		}
 		redirectOutput("C:\\River\\AVGFITNESS.fit");
 		System.out.println("AVG Fitness of " + generationCounter + " : " + ((double)sumOfFitness)/SIZE_OF_POP);
@@ -295,8 +245,16 @@ public class GeneralAlg {
 				randNum2 = rand.nextInt(sumOfFitness+1);//(int)(Math.random() * sumOfFitness);
 				randIndex2 = getIndexFromNum(randNum2,allFitness);
 			}
-			BoardState[] newBaby = spliceTwoSolutions(originalPop[randIndex1], originalPop[randIndex2]);
-			ans[i] = newBaby;
+			try{
+				BoardState[] newBaby = spliceTwoSolutions(originalPop[randIndex1], originalPop[randIndex2]);
+				ans[i] = newBaby;
+			}
+			catch(IndexOutOfBoundsException e)
+			{
+				e.printStackTrace();
+				origOut.println(allFitness);
+			}
+
 		}
 		return ans;
 	}
@@ -306,7 +264,7 @@ public class GeneralAlg {
 		boolean found = false;
 		for (int i = 0; i < allFitness.length & !found;i++)
 		{
-			if (randNum >= startPlace &  randNum < allFitness[i]+startPlace)
+			if (randNum >= startPlace &  randNum <= allFitness[i]+startPlace)
 			{
 				found = true;
 				return i;
@@ -324,9 +282,10 @@ public class GeneralAlg {
 	 * creates a mutation which means to pick a random board and a random plank and move it randomly.
 	 * @param origPop
 	 */
-	private static void createMutation(BoardState[][] origPop)
+	private static void createMutation(BoardState[][] origPop,int genCounter)
 	{
-		final double probOfMut = 1.0 / SIZE_OF_GENOM;
+		double probOfMut = 1.0 / SIZE_OF_GENOM;
+//		probOfMut = probOfMut*0.1;
 		for (BoardState currCit[] : origPop)
 		{
 			double chanceOfMut = rand.nextDouble();
@@ -353,6 +312,7 @@ public class GeneralAlg {
 				}
 				chosenPlanks[plankToReplace] = 0;
 				chosenPlanks[newRandomPlank] = 1;
+				currCit[randBoardIndex].setChosenEdges(chosenPlanks, randSizeOfPlank);
 			}
 		}
 	}

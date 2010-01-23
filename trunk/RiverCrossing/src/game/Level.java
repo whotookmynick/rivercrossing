@@ -170,12 +170,15 @@ public class Level {
 					result.add(e);
 					if (size == 0) {
 						_SizeOneEdgeMap.put(counters[0], e);
+						_InverseEdgeMap.put(e, counters[0]);
 					}
 					if (size == 1) {
 						_SizeTwoEdgeMap.put(counters[1], e);
+						_InverseEdgeMap.put(e,counters[1]);
 					}
 					if (size == 2) {
 						_SizeThreeEdgeMap.put(counters[2], e);
+						_InverseEdgeMap.put(e,counters[2]);
 					}
 					counters[size]++;
 				}	
