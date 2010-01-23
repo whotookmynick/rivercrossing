@@ -301,12 +301,9 @@ public class BoardState {
 	}
 
 	public boolean canReachEdge(int i, int plankSize) {
-		System.out.println("inside canReachEdge");
 		Edge newEdge = _level.getEdge(i, plankSize);
-		System.out.println("### newEdge is "+newEdge);
 		for (Edge e : this.getAllCurrentEdges()) {
 			if (newEdge.isTouching(e)) {
-				System.out.println("newEdgw "+newEdge+" is touching e "+e);
 				return true;
 			}
 		}
@@ -314,11 +311,11 @@ public class BoardState {
 	}
 
 	public Vector<Edge> findAllTouchingEdges(Edge e) {
-		//return findAllTouchingEdges(new Vector<Edge>(), e); //AYALS VERSION
+		return findAllTouchingEdges(new Vector<Edge>(), e); //AYALS VERSION
 		//Noams VERSION
-		Vector<Edge> touchingPlanks = new Vector<Edge>();
-		touchingPlanks.add(e);
-		return findAllTouchingEdges(touchingPlanks, new Vector<Edge>());
+//		Vector<Edge> touchingPlanks = new Vector<Edge>();
+//		touchingPlanks.add(e);
+//		return findAllTouchingEdges(touchingPlanks, new Vector<Edge>());
 	}
 
 	/*Noam's version*/
@@ -370,7 +367,7 @@ public class BoardState {
 		}
 	}
 	
-	/*AYAL's Version
+	/*AYAL's Version*/
 	public Vector<Edge> findAllTouchingEdges(Vector<Edge> touchingEdges, Edge e) {
 		//System.out.println("inside findAllTouchingEdges for:");
 		//System.out.println(touchingEdges);
@@ -401,7 +398,7 @@ public class BoardState {
 		touchingEdges = removeDups(touchingEdges);
 		return touchingEdges;
 	}
-	 */
+	 
 
 	private Vector<Edge> removeDups(Vector<Edge> edges) {
 		Vector<Edge> filtered = new Vector<Edge>();
@@ -477,27 +474,14 @@ public class BoardState {
 				}
 			}
 		}
-		//		System.out.println("#### "+e);
-		//		if (this._level.getInverseEdgeMap() != null ){
-		//			System.out.println("VVVVVVVV");
-		//		}
-		//		else {
-		//			System.out.println("QQQQQQQ");
-		//		}
-		//		int x = this._level.getInverseEdgeMap().get(e);
-		//		return x;
 		return 0;
 	}
 
 	public boolean hasPlankOn(Edge e) {
-		//System.out.println("$$$$ "+e+" size "+ e.getSize());
-		//System.out.println("length "+this.getChosenEdges(e.getSize()).length);
 		if (this.getChosenEdges(e.getSize()-1).length == 0) {
-			//System.out.println("### here2");
 			return false;
 		}
 		return (this.getChosenEdges(e.getSize()-1)[this.getEdgeIndex(e)] == 1);
-		//return (this.getChosenEdges(e.getSize())[0] == 1);
 	}
 
 	public boolean equals(Object o)
