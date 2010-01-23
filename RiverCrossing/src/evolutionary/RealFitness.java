@@ -51,15 +51,15 @@ public class RealFitness implements Fitness{
 	/**
 	 * different weights can be defined for each quality
 	 */
-	private static double _legalityWeight = 2;
-	private static double _lengthWeight = 0;
-	private static double _progressWeight = 0;
-	private static double _repeatitionWeight = 0.75;
+	private static double _LEGALITY_WEIGHT = 1;
+	private static double _LENGTH_WEIGHT = 0;
+	private static double _PROGRESS_WEIGHT = 0;
+	private static double _REPETITIONS_WEIGHT = 0;
 
 	/**
 	 * These next constants exist in order to be able to check if there is a winner in different classes.
 	 */
-	public static final double MAX_LEGALITY_GRADE = _legalityWeight * (INITIAL_CONTEXTED_LEGALITY + INITIAL_UNCONTEXTED_LEGALITY);
+	public static final double MAX_LEGALITY_GRADE = _LEGALITY_WEIGHT * (INITIAL_CONTEXTED_LEGALITY + INITIAL_UNCONTEXTED_LEGALITY);
 	
 	/**
 	 * this is the main function of this class
@@ -69,15 +69,15 @@ public class RealFitness implements Fitness{
 		double length = gradeLength(sequence);
 		double progress = gradeProgress(sequence);
 		double repeatition = gradeRepetition(sequence);
-		double total = (legality * _legalityWeight) +
-		(length * _lengthWeight) +
-		(progress * _progressWeight) +
-		(repeatition * _repeatitionWeight);
+		double total = (legality * _LEGALITY_WEIGHT) +
+		(length * _LENGTH_WEIGHT) +
+		(progress * _PROGRESS_WEIGHT) +
+		(repeatition * _REPETITIONS_WEIGHT);
 		FitnessResult fr = new FitnessResult();
 		fr.total = Math.max(1,(int)total);
-		fr.legal = (legality * _legalityWeight);
-		fr.progress = (progress * _progressWeight);
-		fr.repeat = (repeatition * _repeatitionWeight);
+		fr.legal = (legality * _LEGALITY_WEIGHT);
+		fr.progress = (progress * _PROGRESS_WEIGHT);
+		fr.repeat = (repeatition * _REPETITIONS_WEIGHT);
 		return  fr;
 	}
 

@@ -19,9 +19,9 @@ import game.Level;
  */
 public class GeneralAlg {
 
-	private static final int SIZE_OF_POP = 10;
-	private static final int SIZE_OF_SOLUTION = 10;
-	private static final int NUMBER_OF_GENERATIONS = 10;
+	private static final int SIZE_OF_POP = 30;
+	private static final int SIZE_OF_SOLUTION = 6;
+	private static final int NUMBER_OF_GENERATIONS = 150;
 	private static double SIZE_OF_GENOM;
 
 	private static PrintStream _fileStream;
