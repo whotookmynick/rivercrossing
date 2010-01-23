@@ -338,7 +338,7 @@ public class BoardState {
 		{
 			findAllTouchingEdges(touchingPlanks,touchingEdges);
 		}
-		touchingEdges.addAll(touchingPlanks);
+//		touchingEdges.addAll(touchingPlanks);
 		return touchingEdges;
 	}
 
@@ -373,25 +373,31 @@ public class BoardState {
 		//System.out.println(touchingEdges);
 		//System.out.println(e);
 		//System.out.println("##########");
-		for (int i=0; i<this._s1chosenEdges.length && this._s1chosenEdges[i] == 1; i++) {
-			Edge e1 = _level.getSizeOneEdgeMap().get(i);
-			if ((! touchingEdges.contains(e1)) && (e.isTouching(e1))) {
-				touchingEdges.add(e1);
-				touchingEdges = findAllTouchingEdges(touchingEdges, e1);			
+		for (int i=0; i<this._s1chosenEdges.length; i++) {
+			if (this._s1chosenEdges[i] == 1) {
+				Edge e1 = _level.getSizeOneEdgeMap().get(i);
+				if ((! touchingEdges.contains(e1)) && (e.isTouching(e1))) {
+					touchingEdges.add(e1);
+					touchingEdges = findAllTouchingEdges(touchingEdges, e1);			
+				}
 			}
 		}
-		for (int i=0; i<this._s2chosenEdges.length && this._s2chosenEdges[i] == 1; i++) {
-			Edge e2 = _level.getSizeTwoEdgeMap().get(i);
-			if ((! touchingEdges.contains(e2)) && (e.isTouching(e2))) {
-				touchingEdges.add(e2);
-				touchingEdges = findAllTouchingEdges(touchingEdges, e2);			
+		for (int i=0; i<this._s2chosenEdges.length; i++) {
+			if (this._s2chosenEdges[i] == 1) {
+				Edge e2 = _level.getSizeTwoEdgeMap().get(i);
+				if ((! touchingEdges.contains(e2)) && (e.isTouching(e2))) {
+					touchingEdges.add(e2);
+					touchingEdges = findAllTouchingEdges(touchingEdges, e2);			
+				}
 			}
 		}
-		for (int i=0; i<this._s3chosenEdges.length && this._s3chosenEdges[i] == 1; i++) {
-			Edge e3 = _level.getSizeThreeEdgeMap().get(i);
-			if ((! touchingEdges.contains(e3)) && (e.isTouching(e3))) {
-				touchingEdges.add(e3);
-				touchingEdges = findAllTouchingEdges(touchingEdges, e3);			
+		for (int i=0; i<this._s3chosenEdges.length; i++) {
+			if (this._s3chosenEdges[i] == 1){
+				Edge e3 = _level.getSizeThreeEdgeMap().get(i);
+				if ((! touchingEdges.contains(e3)) && (e.isTouching(e3))) {
+					touchingEdges.add(e3);
+					touchingEdges = findAllTouchingEdges(touchingEdges, e3);			
+				}	
 			}
 		}
 		touchingEdges.add(e);

@@ -14,7 +14,7 @@ public class Main {
 	public static void main(String[] args) {
 				
 		LevelFactory factory = new LevelFactory();
-		Level level = factory.getLevel(1);
+		Level level = factory.getLevel(9);
 		level.print();
 		GeneralAlg.evolutionaryRiverCrossing(level);
 //		BoardState[][] states = GeneralAlg.generateRandomSolutions(level);

@@ -10,4 +10,10 @@ public class FitnessResult {
 	public double legal;
 	public double progress;
 	public double repeat;
+	public boolean hasFinalEdge; //This is mainly for debugging purposes
+	
+	public String toString()
+	{
+		 return "total = " + total + " legal = " + legal + " progress = " + progress + " repeat = " + repeat + " final edge = " + hasFinalEdge;
+	}
 }
