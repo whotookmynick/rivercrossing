@@ -301,9 +301,12 @@ public class BoardState {
 	}
 
 	public boolean canReachEdge(int i, int plankSize) {
+		System.out.println("inside canReachEdge");
 		Edge newEdge = _level.getEdge(i, plankSize);
+		System.out.println("### newEdge is "+newEdge);
 		for (Edge e : this.getAllCurrentEdges()) {
 			if (newEdge.isTouching(e)) {
+				System.out.println("newEdgw "+newEdge+" is touching e "+e);
 				return true;
 			}
 		}
@@ -369,6 +372,10 @@ public class BoardState {
 	
 	/*AYAL's Version
 	public Vector<Edge> findAllTouchingEdges(Vector<Edge> touchingEdges, Edge e) {
+		//System.out.println("inside findAllTouchingEdges for:");
+		//System.out.println(touchingEdges);
+		//System.out.println(e);
+		//System.out.println("##########");
 		for (int i=0; i<this._s1chosenEdges.length && this._s1chosenEdges[i] == 1; i++) {
 			Edge e1 = _level.getSizeOneEdgeMap().get(i);
 			if ((! touchingEdges.contains(e1)) && (e.isTouching(e1))) {
@@ -390,9 +397,27 @@ public class BoardState {
 				touchingEdges = findAllTouchingEdges(touchingEdges, e3);			
 			}
 		}
+		touchingEdges.add(e);
+		touchingEdges = removeDups(touchingEdges);
 		return touchingEdges;
 	}
 	 */
+
+	private Vector<Edge> removeDups(Vector<Edge> edges) {
+		Vector<Edge> filtered = new Vector<Edge>();
+		for (Edge e1 : edges) {
+			boolean foundEqual = false;
+			for (Edge e2 : filtered) {
+				if (e1.equals(e2)) {
+					foundEqual = true;
+				}
+			}
+			if (foundEqual == false) {
+				filtered.add(e1);
+			}
+		}
+		return filtered;
+	}
 
 	public Edge findStartingEdge() {
 		return this._level.findStartingEdge();
@@ -411,34 +436,41 @@ public class BoardState {
 
 	public Vector<Edge> getAllCurrentEdges() {
 		Vector<Edge> result = new Vector<Edge>();
-		for (int i=0; (i< this.getS1chosenEdges().length) && this.getS1chosenEdges()[i] == 1; i++) {
-			result.add(this._level.getSizeOneEdgeMap().get(i));
+		for (int i=0; (i< this.getS1chosenEdges().length); i++) {
+			if (this.getS1chosenEdges()[i] == 1) {
+				result.add(this._level.getSizeOneEdgeMap().get(i));	
+			}
 		}
-		for (int i=0; (i< this.getS2chosenEdges().length) && this.getS2chosenEdges()[i] == 1; i++) {
-			result.add(this._level.getSizeTwoEdgeMap().get(i));
+		for (int i=0; (i< this.getS2chosenEdges().length); i++) {
+			if (this.getS2chosenEdges()[i] == 1) {
+				result.add(this._level.getSizeTwoEdgeMap().get(i));	
+			}
 		}
-		for (int i=0; (i< this.getS3chosenEdges().length) && this.getS3chosenEdges()[i] == 1; i++) {
-			result.add(this._level.getSizeThreeEdgeMap().get(i));
+		for (int i=0; (i< this.getS3chosenEdges().length); i++) {
+			if (this.getS3chosenEdges()[i] == 1) {
+				result.add(this._level.getSizeThreeEdgeMap().get(i));	
+			}
 		}
 		return result;
 	}
 
 	public int getEdgeIndex(Edge e) {
-		if (e.getSize() == 0) {
+		//System.out.println("inside getEdgeIndex for e="+e);
+		if (e.getSize() == 1) {
 			for (int k : this._level.getSizeOneEdgeMap().keySet()) {
 				if (this._level.getSizeOneEdgeMap().get(k).equals(e)) {
 					return k;
 				}
 			}
 		}
-		if (e.getSize() == 1) {
+		if (e.getSize() == 2) {
 			for (int k : this._level.getSizeTwoEdgeMap().keySet()) {
 				if (this._level.getSizeTwoEdgeMap().get(k).equals(e)) {
 					return k;
 				}
 			}
 		}
-		if (e.getSize() == 2) {
+		if (e.getSize() == 3) {
 			for (int k : this._level.getSizeThreeEdgeMap().keySet()) {
 				if (this._level.getSizeThreeEdgeMap().get(k).equals(e)) {
 					return k;
@@ -461,6 +493,7 @@ public class BoardState {
 		//System.out.println("$$$$ "+e+" size "+ e.getSize());
 		//System.out.println("length "+this.getChosenEdges(e.getSize()).length);
 		if (this.getChosenEdges(e.getSize()-1).length == 0) {
+			//System.out.println("### here2");
 			return false;
 		}
 		return (this.getChosenEdges(e.getSize()-1)[this.getEdgeIndex(e)] == 1);
@@ -490,5 +523,36 @@ public class BoardState {
 				return false;
 		}
 		return true;
+	}
+	
+	public boolean equals(BoardState other) {
+		boolean ans = false;
+		boolean flag0 = (this._level.getName().equals(other.getLevel().getName()));
+		boolean flag1 = (this._s1chosenEdges.length == other.getS1chosenEdges().length);
+		boolean flag2 = (this._s2chosenEdges.length == other.getS2chosenEdges().length);
+		boolean flag3 = (this._s3chosenEdges.length == other.getS3chosenEdges().length);
+		//System.out.println(flag0 +" "+ flag1 + " "+ flag2 +" "+ flag3);
+		if (!flag0 || !flag1 || !flag2 || !flag3) {
+			return false;
+		}
+		boolean flag4 = true; boolean flag5 = true; boolean flag6 = true;
+		for (int i = 0; i< this._s1chosenEdges.length; i++) {
+			if  ( ! (this._s1chosenEdges[i] == other.getS1chosenEdges()[i])) {
+				flag4 = false;
+			}
+		}
+		for (int i = 0; i< this._s2chosenEdges.length; i++) {
+			if ( ! (this._s2chosenEdges[i] == other.getS2chosenEdges()[i])) {
+				flag5 = false;
+			}
+		}
+		for (int i = 0; i< this._s3chosenEdges.length; i++) {
+			if ( ! (this._s3chosenEdges[i] == other.getS3chosenEdges()[i])) {
+				flag6 = false;
+			}
+		}
+		//System.out.println(flag4 +" "+ flag5 + " "+ flag6);
+		ans = flag1 && flag2 && flag3 && flag4 && flag5 && flag6;
+		return ans;
 	}
 }

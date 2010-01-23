@@ -31,9 +31,11 @@ public class RealFitness implements Fitness{
 	private static final int TOO_MUCH_MOVING_PLANKS_PENALTY = 10;
 	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 20;
 	private static final int CROSSED_PLANKS_PENALTY = 10;
-	private static final double ILLEGAL_PLANK_WAS_MOVED_PENALTY = 20;
 	private static final int PROGRESS_PENALTY = 10;
 	private static final int REPETITION_PENALTY = 10;
+	private static final double ACTIVE_PLANK_MOVED_BUT_OUT_OF_REACH_PENALTY = 10;
+	private static final double NO_CHANGES_MADE_PENALTY = 10;
+	private static final double MOVING_PLANK_WAS_NOT_ACTIVE_PENALTY = 20;
 	
 	/** 
 	 * these constants define initial grades.
@@ -215,31 +217,49 @@ public class RealFitness implements Fitness{
 	 * @param sequence
 	 * @return
 	 */
-	private double gradeLegality(BoardState[] sequence) {
+	public double gradeLegality(BoardState[] sequence) {
 		double contextedLegality = INITIAL_CONTEXTED_LEGALITY;
 		double uncontextedLegality = INITIAL_UNCONTEXTED_LEGALITY;
 		Vector<Edge> activeSet = sequence[0].findAllTouchingEdges(sequence[0].findStartingEdge());
 		for (int i=0; i<=sequence.length-2; i++){
-//*****************UNCONTEXTED LEGALITY****************************
-			uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);		
-						HashMap<Edge,Edge> possibleMovements = new HashMap<Edge,Edge>();
-						for (Edge e : activeSet) {
-							for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
-								if (isPlankMoved(e,e1,sequence[i+1])) {
-									possibleMovements.put(e, e1);
+			if (sequence[i].equals(sequence[i+1])) {
+				contextedLegality -= NO_CHANGES_MADE_PENALTY;
+			}
+			else {
+				uncontextedLegality -= uncontextedPenalty(sequence[i],sequence[i+1]);		
+				HashMap<Edge,Edge> activePlanksMoved = new HashMap<Edge,Edge>();
+				for (Edge e : activeSet) {
+					for (Edge e1 : sequence[i+1].getAllCurrentEdges()) {
+						boolean isMoved = isPlankMoved(e,e1,sequence[i+1]);
+						if (isMoved) {
+							activePlanksMoved.put(e, e1);		
+							boolean reachableMovement = false;
+							Vector<Edge> reachableFromE = sequence[i].findAllTouchingEdges(e);
+							for (Edge e2 : reachableFromE) {
+								if (e2.isTouching(e1)) {
+									reachableMovement = true;
 								}
 							}
+							if ( ! reachableMovement) {
+								contextedLegality -= ACTIVE_PLANK_MOVED_BUT_OUT_OF_REACH_PENALTY;
+							}						
 						}
-//********************CONTEXTED LEGALITY CHECK***************************
-						Edge chosenTarget = null;
-						if (possibleMovements.isEmpty()) {
-							contextedLegality -= ILLEGAL_PLANK_WAS_MOVED_PENALTY;
-							chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
-						}
-						else {
-							chosenTarget = chooseLegalMovement(possibleMovements);	
-						}
-						activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
+					}
+				}
+				Edge chosenTarget = null;
+				if (activePlanksMoved.isEmpty()) {
+					contextedLegality -= MOVING_PLANK_WAS_NOT_ACTIVE_PENALTY;
+					chosenTarget = chooseRandomMovement(sequence[i],sequence[i+1]);
+				}
+				else {
+					chosenTarget = chooseActivePlankMovement(activePlanksMoved);
+				}
+				activeSet = sequence[i+1].findAllTouchingEdges(chosenTarget);
+			}
+		}
+		if (contextedLegality+uncontextedLegality == INITIAL_CONTEXTED_LEGALITY + INITIAL_UNCONTEXTED_LEGALITY)
+		{
+			System.out.println("I HAVE A WINNER");
 		}
 		return uncontextedLegality + contextedLegality;
 	}
@@ -258,7 +278,7 @@ public class RealFitness implements Fitness{
 		}
 	}
 
-	private Edge chooseLegalMovement(HashMap<Edge, Edge> possibleMovements) {
+	private Edge chooseActivePlankMovement(HashMap<Edge, Edge> possibleMovements) {
 		Random generator = new Random();
 		Object[] values = possibleMovements.values().toArray();
 		Object randomValue = values[generator.nextInt(values.length)];
@@ -266,10 +286,13 @@ public class RealFitness implements Fitness{
 	}
 
 	private boolean isPlankMoved(Edge from, Edge to, BoardState boardState) {
-		return (( ! boardState.hasPlankOn(from)) && (boardState.hasPlankOn(to)));
+		boolean hasFromPlank = boardState.hasPlankOn(from);
+		boolean hasToPlank = boardState.hasPlankOn(to);
+		return ((from.getSize() == to.getSize()) &&
+				( ! hasFromPlank) && (hasToPlank));
 	}
 
-	private double uncontextedPenalty(BoardState from, BoardState to) {
+	public double uncontextedPenalty(BoardState from, BoardState to) {
 		int[] penalty1 = {0,0,0};
 		int[] penalty2 = {0,0,0};
 		int penalty3 = 0;
@@ -293,9 +316,10 @@ public class RealFitness implements Fitness{
 		if (to.hasCrossedPlanks()) {
 			penalty3 = CROSSED_PLANKS_PENALTY;
 		}
-		return penalty1[0] + penalty1[1] + penalty1[2] +
-		penalty2[0] + penalty2[1] + penalty2[2] +
-		penalty3;
+		double totalPenalty = penalty1[0] + penalty1[1] + penalty1[2] +
+						   penalty2[0] + penalty2[1] + penalty2[2] +
+						   penalty3;
+		return totalPenalty;
 	}
 
 

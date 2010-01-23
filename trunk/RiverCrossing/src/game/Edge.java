@@ -25,7 +25,14 @@ public class Edge {
 		}
 	}
 	public String toString() {
-		return "[<row "+_x1+",col "+_y1+">, <row "+_x2+",col "+_y2+">]";
+		if (this.isHorizontal()) {
+			return "[H"+this.getSize()+"<"+_x1+","+_y1+">/<"+_x2+","+_y2+">]";
+		}
+		else {
+			return "[V"+this.getSize()+"<"+_x1+","+_y1+">/<"+_x2+","+_y2+">]";
+		}
+
+		//return "[<row "+_x1+",col "+_y1+">, <row "+_x2+",col "+_y2+">]";
 	}
 	public int getX1() {
 		return _x1;

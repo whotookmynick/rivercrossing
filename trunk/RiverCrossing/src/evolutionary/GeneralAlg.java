@@ -19,8 +19,9 @@ import game.Level;
  */
 public class GeneralAlg {
 
-	private static final int SIZE_OF_POP = 50;
+	private static final int SIZE_OF_POP = 10;
 	private static final int SIZE_OF_SOLUTION = 10;
+	private static final int NUMBER_OF_GENERATIONS = 10;
 	private static double SIZE_OF_GENOM;
 
 	private static PrintStream _fileStream;
@@ -59,7 +60,7 @@ public class GeneralAlg {
 		SIZE_OF_GENOM = (level.getSizeOnePlanks() + level.getSizeTwoPlanks() + level.getSizeThreePlanks()) * SIZE_OF_SOLUTION;
 		BoardState[][] population = generateRandomSolutions(level);
 		BoardState[] solution = null;//getGoodSolution(population,solutionForLevel1,level);
-		for (int i = 0; i <= 100 & solution == null; i++) // This should be replaced with the end condition of the alg
+		for (int i = 0; i <= NUMBER_OF_GENERATIONS & solution == null; i++) // This should be replaced with the end condition of the alg
 		{
 			population = createNewPopulation(population, i);
 			createMutation(population);
