@@ -31,7 +31,7 @@ public class RealFitness implements Fitness{
 	private static final int TOO_MUCH_MOVING_PLANKS_PENALTY = 10;
 	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 20;
 	private static final int CROSSED_PLANKS_PENALTY = 10;
-	private static final int PROGRESS_PENALTY = 10;
+	private static final int PROGRESS_PENALTY = 50;
 	private static final int REPETITION_PENALTY = 10;
 	private static final double ACTIVE_PLANK_MOVED_BUT_OUT_OF_REACH_PENALTY = 10;
 	private static final double NO_CHANGES_MADE_PENALTY = 10;
@@ -53,7 +53,7 @@ public class RealFitness implements Fitness{
 	 */
 	private static double _LEGALITY_WEIGHT = 1;
 	private static double _LENGTH_WEIGHT = 0;
-	private static double _PROGRESS_WEIGHT = 0;
+	private static double _PROGRESS_WEIGHT = 1;
 	private static double _REPETITIONS_WEIGHT = 0;
 
 	/**
@@ -122,13 +122,18 @@ public class RealFitness implements Fitness{
 	 * The progress is defined as the amount of progress done in each third of the sequence.
 	 * e.g. If the sequence has moves in the first third of the sequence that constitutes moves in the
 	 * second third of the board then that move is penalized.
+	 * 
+	 * RIGHT NOW THE METHOD JUST CHECKS IF THERE IS A FINAL EDGE
 	 * @param sequence
 	 * @return
 	 */
 	private double gradeProgress(BoardState[] sequence) {
 		Level level = sequence[0].getLevel();
+		Edge finalEdge = level.getFinalEdge();
+		boolean  hasFinalEdge = false;
 		int penalizeVal = 0;
-		for (int i = 0; i < sequence.length/3; i++)
+		int i = 0;
+		for (i = 0; i < sequence.length/3; i++)
 		{
 			for (int k = 0; k < 3; k++)
 			{
@@ -148,11 +153,16 @@ public class RealFitness implements Fitness{
 							penalizeVal += different.getX2() - 3;
 						}
 					}
+					if (chosenBefore[l] == 1)
+					{
+						Edge finalContender = level.getEdge(l, k);
+						hasFinalEdge = hasFinalEdge | finalContender.equals(finalEdge);
+					}
 				}
 			}
 		}
 
-		for (int i = sequence.length/3 + 1; i < sequence.length*2/3; i++)
+		for (; i < sequence.length*2/3; i++)
 		{
 			for (int k = 0; k < 3; k++)
 			{
@@ -180,11 +190,16 @@ public class RealFitness implements Fitness{
 							penalizeVal += 4 - different.getX2();
 						}
 					}
+					if (chosenBefore[l] == 1)
+					{
+						Edge finalContender = level.getEdge(l, k);
+						hasFinalEdge = hasFinalEdge | finalContender.equals(finalEdge);
+					}
 				}
 			}
 		}
 
-		for (int i = sequence.length*2/3 + 1; i < sequence.length-1; i++)
+		for (; i < sequence.length-1; i++)
 		{
 			for (int k = 0; k < 3; k++)
 			{
@@ -205,10 +220,24 @@ public class RealFitness implements Fitness{
 							penalizeVal += 6 - different.getX2();
 						}
 					}
+					if (chosenBefore[l] == 1)
+					{
+						Edge finalContender = level.getEdge(l, k);
+						hasFinalEdge = hasFinalEdge | finalContender.equals(finalEdge);
+					}
+					if (chosenAfter[l] == 1)
+					{
+						Edge finalContender = level.getEdge(l, k);
+						hasFinalEdge = hasFinalEdge | finalContender.equals(finalEdge);
+					}
 				}
 			}
 		}
-
+		penalizeVal = 0;
+		if (!hasFinalEdge)
+		{
+			penalizeVal = 1;
+		}
 		return INITIAL_PROGRESS_GRADE - (penalizeVal * PROGRESS_PENALTY);
 	}
 

@@ -83,9 +83,13 @@ public class Level {
 	private HashMap<Integer, Edge> _SizeTwoEdgeMap;
 	private HashMap<Integer, Edge> _SizeThreeEdgeMap;
 	private HashMap<Edge, Integer> _InverseEdgeMap;
+
+	private Edge _finalEdge;
 	
 	public Level() {
 
+		_finalEdge = new Edge(0, 0, 0, 6);
+		
 		this._endRow = 0;
 		this._startRow = 0;
 		this._sizeOneEdges = new Vector<Edge>();
@@ -335,6 +339,16 @@ public class Level {
 		return null;
 	}
 
+	public Edge getFinalEdge()
+	{
+		return _finalEdge;
+	}
+	
+	public void setFinalEdge(Edge fin)
+	{
+		_finalEdge = fin;
+	}
+	
 	public void setName(String name) {
 		this._name = name;
 		
