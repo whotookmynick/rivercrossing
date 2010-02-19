@@ -174,6 +174,9 @@ public class LevelFactory {
 		lev.setSizeTwoPlanks(2);
 		lev.setSizeThreePlanks(0);
 		
+		Edge finalEdge = new Edge(2,4,2,6);
+		lev.setFinalEdge(finalEdge);
+		
 		int[][] stumps = { {0,1,1,1,0,1,0}, 
 						   {0,0,0,1,0,0,0}, 
 						   {1,0,1,0,1,0,1}, 
@@ -239,6 +242,9 @@ public class LevelFactory {
 		lev.setSizeTwoPlanks(1);
 		lev.setSizeThreePlanks(1);
 		
+		Edge finalEdge = new Edge(4,5,4,6);
+		lev.setFinalEdge(finalEdge);
+		
 		int[][] stumps = { {0,1,0,0,1,0,0}, 
 						   {1,0,1,0,0,0,0}, 
 						   {0,0,0,0,0,0,0}, 
@@ -270,6 +276,9 @@ public class LevelFactory {
 		lev.setSizeTwoPlanks(2);
 		lev.setSizeThreePlanks(1);
 		
+		Edge finalEdge = new Edge(3,5,3,6);
+		lev.setFinalEdge(finalEdge);
+		
 		int[][] stumps = { {0,0,0,0,1,0,0}, 
 						   {1,0,1,0,1,0,0}, 
 						   {0,0,0,0,0,0,0}, 
@@ -300,6 +309,9 @@ public class LevelFactory {
 		lev.setSizeOnePlanks(1);
 		lev.setSizeTwoPlanks(2);
 		lev.setSizeThreePlanks(0);
+		
+		Edge finalEdge = new Edge(1,5,1,6);
+		lev.setFinalEdge(finalEdge);
 		
 		int[][] stumps = { {0,1,0,1,0,0,0}, 
 						   {0,0,0,0,0,1,1}, 

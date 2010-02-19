@@ -23,11 +23,14 @@ public class GeneralAlg {
 	static BoardState[] bestCandidate;
 	static FitnessResult maxFitness = new FitnessResult();//For debugging.
 
-	private static final int SIZE_OF_POP = 200;
-	public static final int SIZE_OF_SOLUTION = 16;
+	private static final int SIZE_OF_POP = 150;
+	public static final int SIZE_OF_SOLUTION = 14;
 	private static final int NUMBER_OF_GENERATIONS = 1000;
 	private static double SIZE_OF_GENOM;
+	private static double PROB_OF_SPLICE = 1;
 
+	private static double probOfMut = (1.0 / SIZE_OF_GENOM)*0.1;
+	
 	private static PrintStream _fileStream;
 
 	public static Random rand = new Random();
@@ -41,9 +44,12 @@ public class GeneralAlg {
 		BoardState[] solution = null;//getGoodSolution(population,solutionForLevel1,level);
 		for (int i = 0; i <= NUMBER_OF_GENERATIONS & solution == null; i++) // This should be replaced with the end condition of the alg
 		{
+			GeneralAlg.redirectOutput("C:\\River\\allWinners.txt");
+			System.out.println("GENERATION " + i);
 			population = createNewPopulation(population, i);
 			createMutation(population,i);
 		}
+//		redirectOutput("C:\\River\\LastGen.txt");
 //		for (int i = 0;i < population.length;i++)
 //		{
 //			System.out.println("******************** Citizen number " + i);
@@ -74,9 +80,10 @@ public class GeneralAlg {
 			Edge lastMove = level.findStartingEdge();
 			for (int i = 1; i < SIZE_OF_SOLUTION; i++)
 			{
-				RandomBoardStateResult rbsr = generateNextRandomBoardState(ans[k][i-1], lastMove);
-				BoardState currBoardState = rbsr.bs;//generateNextRandomBoardState(ans[k][i-1]);
-				lastMove = rbsr.lastMove;
+//				BoardState currBoardState = generateNextRandomBoardState(ans[k][i-1]);
+								RandomBoardStateResult rbsr = generateNextRandomBoardState(ans[k][i-1], lastMove);
+								BoardState currBoardState = rbsr.bs;
+								lastMove = rbsr.lastMove;
 				ans[k][i] = currBoardState;
 			}
 		}
@@ -172,15 +179,21 @@ public class GeneralAlg {
 	private static BoardState[] spliceTwoSolutions(BoardState[] solve1,BoardState[] solve2)
 	{
 
-		int placeToSplice = rand.nextInt(SIZE_OF_SOLUTION+1);//(int)(Math.random() * SIZE_OF_SOLUTION);
+		int placeToStartSplice = rand.nextInt(SIZE_OF_SOLUTION);//(int)(Math.random() * SIZE_OF_SOLUTION);
+		int placeToEndSplice = rand.nextInt(SIZE_OF_SOLUTION - placeToStartSplice) + placeToStartSplice;
 		BoardState []ans = new BoardState[SIZE_OF_SOLUTION];
-		for (int i = 0; i < placeToSplice; i++)
+		for (int i = 0; i < placeToStartSplice; i++)
 		{
 			ans[i] = solve1[i];
 		}
-		for (int i = placeToSplice; i < SIZE_OF_SOLUTION; i++)
+		for (int i = placeToStartSplice; i < placeToEndSplice; i++)
 		{
 			ans[i] = solve2[i];
+		}
+
+		for (int i = placeToEndSplice; i < SIZE_OF_SOLUTION; i++)
+		{
+			ans[i] = solve1[i];
 		}
 		return ans;
 
@@ -196,9 +209,6 @@ public class GeneralAlg {
 		{
 			FitnessResult fr = fit.fitnessFunction(originalPop[i]);
 			int currFit = fr.total;
-
-			if (currFit > maxFitness.total) {bestCandidate = originalPop[i];maxFitness=fr;}
-
 			originalPop[i][0].setFitness(currFit); // the first boardstate will hold fitness for the solution
 			if (generationCounter % 10 == 0)
 			{
@@ -207,54 +217,55 @@ public class GeneralAlg {
 				"_citizen="+i+
 				"_fitness="+currFit+
 				".txt";
-//				redirectOutput(outputFileName);		
-//				for (int k=0; k<SIZE_OF_SOLUTION; k++) {
-//					originalPop[i][k].print();
-//				}
-//				System.out.println(fr);
+				//				redirectOutput(outputFileName);		
+				//				for (int k=0; k<SIZE_OF_SOLUTION; k++) {
+				//					originalPop[i][k].print();
+				//				}
+				//				System.out.println(fr);
 			}
-			allFitness[i] = currFit;
-			sumOfFitness += currFit;
+			//			redirectOutput("C:\\River\\Fitness" + generationCounter);
+			//			System.out.println(currFit);
 			if (fr.legal == RealFitness.MAX_LEGALITY_GRADE)
 			{
 				redirectOutput("C:\\River\\allWinners.txt");
 				if (fr.hasFinalEdge)
 				{
+					currFit = currFit * 3;
+					fr.total = fr.total * 3;
 					System.out.println("I HAVE A WINNER gen = " + generationCounter + " citizen = " + i);
 					//				else
 					//					System.out.println("I HAVE A PERFECT SPECIMIN gen = " + generationCounter + " citizen = " + i);
 					System.out.println(fr);
 					for (int ll=0; ll < originalPop[i].length;ll++)
 						originalPop[i][ll].print();
-					return new BoardState[][]{originalPop[i]};
+					//return new BoardState[][]{originalPop[i]};
 				}
 			}
-
+			allFitness[i] = currFit;
+			sumOfFitness += currFit;
+			if (currFit > maxFitness.total) {bestCandidate = originalPop[i];maxFitness=fr;}
 		}
 		redirectOutput("C:\\River\\AVGFITNESS.fit");
 		System.out.println("AVG Fitness of " + generationCounter + " : " + ((double)sumOfFitness)/SIZE_OF_POP);
 
 		for (int i=0; i < SIZE_OF_POP; i++)
 		{
-			int randNum1 = rand.nextInt(sumOfFitness);//(int)(Math.random() * sumOfFitness);
-			int randIndex1 = getIndexFromNum(randNum1,allFitness);
-			int randNum2 = rand.nextInt(sumOfFitness);//(int)(Math.random() * sumOfFitness);
-			int randIndex2 = getIndexFromNum(randNum2,allFitness);
-			while (randIndex1 == randIndex2)
+			BoardState[] newBaby = originalPop[i];
+			double chanceForSplice = rand.nextDouble();
+			if (chanceForSplice <= PROB_OF_SPLICE)
 			{
-				randNum2 = rand.nextInt(sumOfFitness+1);//(int)(Math.random() * sumOfFitness);
-				randIndex2 = getIndexFromNum(randNum2,allFitness);
+				int randNum1 = rand.nextInt(sumOfFitness);//(int)(Math.random() * sumOfFitness);
+				int randIndex1 = getIndexFromNum(randNum1,allFitness);
+				int randNum2 = rand.nextInt(sumOfFitness);//(int)(Math.random() * sumOfFitness);
+				int randIndex2 = getIndexFromNum(randNum2,allFitness);
+				while (randIndex1 == randIndex2)
+				{
+					randNum2 = rand.nextInt(sumOfFitness+1);//(int)(Math.random() * sumOfFitness);
+					randIndex2 = getIndexFromNum(randNum2,allFitness);
+				}
+				newBaby = spliceTwoSolutions(originalPop[randIndex1], originalPop[randIndex2]);
 			}
-			try{
-				BoardState[] newBaby = spliceTwoSolutions(originalPop[randIndex1], originalPop[randIndex2]);
-				ans[i] = newBaby;
-			}
-			catch(IndexOutOfBoundsException e)
-			{
-				e.printStackTrace();
-				origOut.println(allFitness);
-			}
-
+			ans[i] = newBaby;
 		}
 		return ans;
 	}
@@ -284,8 +295,6 @@ public class GeneralAlg {
 	 */
 	private static void createMutation(BoardState[][] origPop,int genCounter)
 	{
-		double probOfMut = 1.0 / SIZE_OF_GENOM;
-//		probOfMut = probOfMut*0.1;
 		for (BoardState currCit[] : origPop)
 		{
 			double chanceOfMut = rand.nextDouble();

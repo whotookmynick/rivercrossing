@@ -25,13 +25,13 @@ public class RealFitness implements Fitness{
 	 * repetition - solution should be penalized for back-and-forth movement
 	 **/
 
-	private static final double INITIAL_UNCONTEXTED_LEGALITY = 40 * GeneralAlg.SIZE_OF_SOLUTION;
-	private static final double INITIAL_CONTEXTED_LEGALITY = 40 * GeneralAlg.SIZE_OF_SOLUTION;
+	private static final double INITIAL_UNCONTEXTED_LEGALITY = 30 * GeneralAlg.SIZE_OF_SOLUTION;
+	private static final double INITIAL_CONTEXTED_LEGALITY = 30 * GeneralAlg.SIZE_OF_SOLUTION;
 	public static final double PERFECT_LEGALITY = INITIAL_UNCONTEXTED_LEGALITY + INITIAL_CONTEXTED_LEGALITY;
 	private static final int TOO_MUCH_MOVING_PLANKS_PENALTY = 20;
 	private static final int IMPOSSIBLE_PLANK_MOVEMENT_PENALTY = 25;
 	private static final int CROSSED_PLANKS_PENALTY = 20;
-	private static final int PROGRESS_PENALTY = 5;
+	private static final int PROGRESS_PENALTY = 8;
 	private static final int REPETITION_PENALTY = 20;
 	private static final double ACTIVE_PLANK_MOVED_BUT_OUT_OF_REACH_PENALTY = 10;
 	private static final double NO_CHANGES_MADE_PENALTY = 10;
@@ -44,15 +44,15 @@ public class RealFitness implements Fitness{
 	 * and it can be initially high (and a solution will be penalized for being bad)
 	 */
 	private final double INITIAL_LENGTH_GRADE = 100;
-	public static final double INITIAL_PROGRESS_GRADE =  30 * GeneralAlg.SIZE_OF_SOLUTION;//100;
+	public static final double INITIAL_PROGRESS_GRADE =  8 * GeneralAlg.SIZE_OF_SOLUTION;//100;
 	private final double INITIAL_REPETITION_GRADE = GeneralAlg.SIZE_OF_SOLUTION * 25;//100;
 	
 	/**
 	 * different weights can be defined for each quality
 	 */
-	private static double _LEGALITY_WEIGHT = 6;
+	private static double _LEGALITY_WEIGHT = 4;
 	private static double _LENGTH_WEIGHT = 0;
-	private static double _PROGRESS_WEIGHT = 2.5;
+	private static double _PROGRESS_WEIGHT = 1.5;
 	private static double _REPETITIONS_WEIGHT = 1;
 
 	/**
@@ -252,13 +252,17 @@ public class RealFitness implements Fitness{
 		double uncontextedLegality = INITIAL_UNCONTEXTED_LEGALITY;
 		Vector<Edge> activeSet = sequence[0].findAllTouchingEdges(sequence[0].findStartingEdge());
 		for (int i=0; i<=sequence.length-2; i++){
-			if (contextedLegality == INITIAL_CONTEXTED_LEGALITY 
-					& uncontextedLegality == INITIAL_UNCONTEXTED_LEGALITY
-					&& sequence[i].hasPlankOn(sequence[i].getLevel().getFinalEdge()))
-			{
-				GeneralAlg.origOut.println("Yiiippppeeeeeee");
-				return  INITIAL_CONTEXTED_LEGALITY + INITIAL_UNCONTEXTED_LEGALITY;
-			}
+//			if (contextedLegality == INITIAL_CONTEXTED_LEGALITY 
+//					& uncontextedLegality == INITIAL_UNCONTEXTED_LEGALITY
+//					&& sequence[i].hasPlankOn(sequence[i].getLevel().getFinalEdge()))
+//			{
+//				GeneralAlg.origOut.println("Yiiippppeeeeeee");
+//				GeneralAlg.redirectOutput("C:\\River\\allWinners.txt");
+//				System.out.println("****************************");
+//				for (int k = 0; k < sequence.length;k++)
+//					sequence[k].print();
+//				return  INITIAL_CONTEXTED_LEGALITY + INITIAL_UNCONTEXTED_LEGALITY;
+//			}
 			if (sequence[i].equals(sequence[i+1])) {
 				contextedLegality -= NO_CHANGES_MADE_PENALTY;
 			}
